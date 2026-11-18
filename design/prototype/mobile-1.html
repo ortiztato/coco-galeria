@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Cartel — Mobile 1</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Six+Caps&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+.grain{background-image:url(../assets/grain.png);background-size:300px 300px}
+</style>
+</helmet>
+<div style="width: 1410px; height: 1960px; box-sizing: border-box; padding: 56px 60px; background: #262626; display: flex; gap: 60px; font-family: 'JetBrains Mono', ui-monospace, monospace">
+
+  <!-- HOME -->
+  <div style="display: flex; flex-direction: column; gap: 16px">
+    <span style="font-size: 13px; font-weight: 700; color: #C6FF00">Home — 390 px</span>
+    <div class="grain" style="width: 390px; height: 1800px; overflow: hidden; border-radius: 36px; background-color: #0A0A0A; color: #F2F2F2">
+      <div style="padding: 34px 0 0; background: #C6FF00"><div style="overflow: hidden; white-space: nowrap; color: #0A0A0A; font-size: 11px; font-weight: 700; padding: 5px 0">★ NOMBRE APELLIDO ★ OBRA 2020—2024 ★ 12 OBRAS ★ NOMBRE</div></div>
+      <header style="display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; border-bottom: 2px solid #F2F2F2"><span style="font-family: 'Six Caps', sans-serif; font-size: 34px; line-height: 1">NOMBRE APELLIDO</span><button type="button" style="height: 44px; padding: 0 14px; border: 0; background: #C6FF00; color: #0A0A0A; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700">MENÚ</button></header>
+      <div style="position: relative; height: 248px; margin: 14px 16px 0">
+        <span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: 120px; line-height: 0.95; color: #FF48B0; mix-blend-mode: screen">NOMBRE<br>APELLIDO</span>
+        <span style="position: absolute; left: 8px; top: 7px; font-family: 'Six Caps', sans-serif; font-size: 120px; line-height: 0.95; color: #00B3FF; mix-blend-mode: screen">NOMBRE<br>APELLIDO</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin: 0 16px; padding: 10px 0; border-top: 2px solid #F2F2F2; font-size: 11px; font-weight: 700"><span>ARTISTA VISUAL · [CIUDAD]</span><span style="color: #C6FF00">2020—2024</span></div>
+      <div style="display: flex; gap: 6px; padding: 12px 16px; overflow: hidden; border-top: 1px solid #262626; border-bottom: 1px solid #262626">
+        <span style="flex: none; display: inline-flex; align-items: center; height: 40px; padding: 0 12px; background: #FF48B0; color: #0A0A0A; font-size: 11px; font-weight: 700">TODAS (12)</span>
+        <span style="flex: none; display: inline-flex; align-items: center; height: 40px; padding: 0 12px; border: 1px solid #3A3A3A; font-size: 11px; font-weight: 700">CAMPOS DE COLOR (4)</span>
+        <span style="flex: none; display: inline-flex; align-items: center; height: 40px; padding: 0 12px; border: 1px solid #3A3A3A; font-size: 11px; font-weight: 700">HORIZONTES (3)</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #262626">
+        <sc-for list="{{homeWorks}}" as="w" hint-placeholder-count="8">
+          <a href="obra.html" style="display: flex; flex-direction: column; background: #0A0A0A; text-decoration: none">
+            <span style="height: 180px; display: flex; align-items: center; justify-content: center; padding: 18px; box-sizing: border-box; background: #121212"><img src="{{w.src}}" alt="{{w.title}}" style="display: block; max-width: 100%; max-height: 100%"></span>
+            <span style="display: flex; flex-direction: column; padding: 8px 10px 12px"><span style="font-size: 10px; font-weight: 700; color: #A3A3A3">{{w.num}} · {{w.year}}</span><span style="font-family: 'Six Caps', sans-serif; font-size: 36px; line-height: 0.95">{{w.titleUp}}</span></span>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLECCIONES -->
+  <div style="display: flex; flex-direction: column; gap: 16px">
+    <span style="font-size: 13px; font-weight: 700; color: #C6FF00">Colecciones — 390 px</span>
+    <div class="grain" style="width: 390px; height: 1800px; overflow: hidden; border-radius: 36px; background-color: #0A0A0A; color: #F2F2F2">
+      <div style="padding: 34px 0 0; background: #C6FF00"><div style="overflow: hidden; white-space: nowrap; color: #0A0A0A; font-size: 11px; font-weight: 700; padding: 5px 0">★ 4 COLECCIONES ★ 12 OBRAS ★ 2020—2024 ★ 4 COLECCIONES</div></div>
+      <header style="display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; border-bottom: 2px solid #F2F2F2"><span style="font-family: 'Six Caps', sans-serif; font-size: 34px; line-height: 1">NOMBRE APELLIDO</span><button type="button" style="height: 44px; padding: 0 14px; border: 0; background: #C6FF00; color: #0A0A0A; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700">MENÚ</button></header>
+      <div style="position: relative; height: 150px; margin: 16px 16px 0">
+        <span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: 150px; line-height: 0.78; color: #FF48B0; mix-blend-mode: screen">COLECCIONES</span>
+        <span style="position: absolute; left: 8px; top: 7px; font-family: 'Six Caps', sans-serif; font-size: 150px; line-height: 0.78; color: #00B3FF; mix-blend-mode: screen">COLECCIONES</span>
+      </div>
+      <p style="margin: 0; padding: 12px 16px 18px; font-size: 12px; line-height: 1.6; color: #A3A3A3">La obra agrupada en series. Cada colección reúne piezas que comparten una búsqueda, un material o un período.</p>
+      <div style="border-top: 2px solid #F2F2F2">
+        <sc-for list="{{cols}}" as="c" hint-placeholder-count="4">
+          <a href="coleccion.html" style="display: flex; flex-direction: column; gap: 10px; padding: 16px; border-bottom: 1px solid #262626; text-decoration: none">
+            <span style="display: flex; justify-content: space-between; align-items: flex-end"><span style="font-family: 'Six Caps', sans-serif; font-size: 88px; line-height: 0.85; color: {{c.color}}">{{c.nameUp}}</span><span style="font-family: 'Six Caps', sans-serif; font-size: 52px; line-height: 1; color: #C6FF00">→</span></span>
+            <span style="font-size: 11px; font-weight: 700"><span style="color: #A3A3A3">{{c.num}}</span> · {{c.count}} OBRAS · {{c.years}}</span>
+            <span style="display: flex; gap: 6px">
+              <sc-for list="{{c.thumbs}}" as="t" hint-placeholder-count="4">
+                <span style="width: 82px; height: 82px; display: flex; align-items: center; justify-content: center; padding: 8px; box-sizing: border-box; background: #141414"><img src="{{t.src}}" alt="" style="display: block; max-width: 100%; max-height: 100%"></span>
+              </sc-for>
+            </span>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <!-- OBRA -->
+  <div style="display: flex; flex-direction: column; gap: 16px">
+    <span style="font-size: 13px; font-weight: 700; color: #C6FF00">Obra — 390 px (tocá las vistas)</span>
+    <div class="grain" style="width: 390px; height: 1800px; overflow: hidden; border-radius: 36px; background-color: #0A0A0A; color: #F2F2F2">
+      <div style="padding: 34px 0 0; background: #C6FF00"><div style="overflow: hidden; white-space: nowrap; color: #0A0A0A; font-size: 11px; font-weight: 700; padding: 5px 0">★ OBRA 01 / 12 ★ UMBRAL ROJO ★ 2023 ★ ÓLEO SOBRE TELA ★</div></div>
+      <header style="display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; border-bottom: 2px solid #F2F2F2"><span style="font-family: 'Six Caps', sans-serif; font-size: 34px; line-height: 1">NOMBRE APELLIDO</span><button type="button" style="height: 44px; padding: 0 14px; border: 0; background: #C6FF00; color: #0A0A0A; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700">MENÚ</button></header>
+      <div style="display: flex; justify-content: space-between; padding: 12px 16px; font-size: 11px; font-weight: 700; color: #A3A3A3"><a href="home.html" style="text-decoration: none">← OBRAS</a><span>01 / 12</span></div>
+      <div style="height: 430px; margin: 0 16px; display: flex; align-items: center; justify-content: center; padding: 30px; box-sizing: border-box; background: #121212">
+        <img src="{{cur.src}}" alt="{{cur.alt}}" style="display: block; max-width: 100%; max-height: 100%; box-shadow: {{cur.shadow}}">
+      </div>
+      <div style="display: flex; gap: 6px; padding: 12px 16px 0">
+        <sc-for list="{{views}}" as="v" hint-placeholder-count="4">
+          <button type="button" onClick="{{v.pick}}" aria-label="{{v.label}}" aria-pressed="{{v.pressed}}" style="flex: 1; height: 64px; padding: 0; border: 3px solid {{v.border}}; background: #0A0A0A; cursor: pointer; overflow: hidden"><img src="{{v.src}}" alt="" style="display: block; width: 100%; height: 100%; object-fit: cover"></button>
+        </sc-for>
+      </div>
+      <div style="padding: 6px 16px 0; font-size: 10px; font-weight: 700; color: #FF48B0">{{cur.label}}</div>
+      <div style="padding: 18px 16px 0; font-size: 11px; font-weight: 700; color: #FF48B0">N.º 01 — <a href="coleccion.html" style="color: #00B3FF">CAMPOS DE COLOR</a></div>
+      <h1 style="position: relative; height: 200px; margin: 6px 16px 0; font-weight: 400">
+        <span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: 100px; line-height: 0.95; color: #FF48B0; mix-blend-mode: screen">UMBRAL<br>ROJO</span>
+        <span style="position: absolute; left: 8px; top: 7px; font-family: 'Six Caps', sans-serif; font-size: 100px; line-height: 0.95; color: #00B3FF; mix-blend-mode: screen" aria-hidden="true">UMBRAL<br>ROJO</span>
+      </h1>
+      <dl style="margin: 10px 16px 0; border-top: 2px solid #F2F2F2">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; border-bottom: 1px solid #262626"><dt style="font-size: 11px; font-weight: 700; color: #A3A3A3">AÑO</dt><dd style="margin: 0; font-family: 'Six Caps', sans-serif; font-size: 36px; line-height: 1">2023</dd></div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; border-bottom: 1px solid #262626"><dt style="font-size: 11px; font-weight: 700; color: #A3A3A3">TÉCNICA</dt><dd style="margin: 0; font-family: 'Six Caps', sans-serif; font-size: 36px; line-height: 1">ÓLEO SOBRE TELA</dd></div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; border-bottom: 1px solid #262626"><dt style="font-size: 11px; font-weight: 700; color: #A3A3A3">MEDIDAS</dt><dd style="margin: 0; font-family: 'Six Caps', sans-serif; font-size: 36px; line-height: 1">160 × 120 CM</dd></div>
+      </dl>
+      <p style="margin: 0; padding: 16px 16px 0; font-size: 13px; line-height: 1.7; color: #D4D4D4">Dos campos de color se enfrentan sobre un fondo de rojo profundo. La franja intermedia funciona como un umbral: un lugar de paso entre la luz y la sombra. Pintada en capas finas a lo largo de varios meses, la obra pide ser vista de cerca y en silencio.</p>
+      <a href="contacto.html" style="display: flex; align-items: center; justify-content: center; height: 52px; margin: 18px 16px 0; background: #FF48B0; color: #0A0A0A; font-size: 12px; font-weight: 700; text-decoration: none">CONSULTAR POR ESTA OBRA →</a>
+      <div style="display: flex; margin: 18px 0 0; border-top: 1px solid #262626; border-bottom: 1px solid #262626; font-size: 11px; font-weight: 700">
+        <a href="obra.html" style="flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 12px 16px; border-right: 1px solid #262626; text-decoration: none"><span style="color: #A3A3A3">← ANTERIOR</span><span style="font-family: 'Six Caps', sans-serif; font-weight: 400; font-size: 34px; line-height: 1">BANDAS</span></a>
+        <a href="obra.html" style="flex: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; padding: 12px 16px; text-decoration: none"><span style="color: #A3A3A3">SIGUIENTE →</span><span style="font-family: 'Six Caps', sans-serif; font-weight: 400; font-size: 34px; line-height: 1">HORIZONTE GRIS</span></a>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1410,"height":1960}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const works = [
+      ['../assets/obras/w01.jpg', 'Umbral rojo', '2023'],
+      ['../assets/obras/w05.jpg', 'Horizonte gris', '2024'],
+      ['../assets/obras/w03.jpg', 'Composición con sol', '2024'],
+      ['../assets/obras/w04.jpg', 'Vertical ocre', '2021'],
+      ['../assets/obras/w06.jpg', 'Tres tiempos', '2022'],
+      ['../assets/obras/w07.jpg', 'Monte', '2023'],
+      ['../assets/obras/w09.jpg', 'Jardín de noviembre', '2024'],
+      ['../assets/obras/w10.jpg', 'Nocturno con línea', '2023'],
+      ['../assets/obras/w02.jpg', 'Corriente', '2022'],
+      ['../assets/obras/w11.jpg', 'Fragmentos de tierra', '2022']
+    ];
+    const cols = [
+      { name: 'Campos de color', years: '2020—2023', thumbs: ['../assets/obras/w01.jpg', '../assets/obras/w06.jpg', '../assets/obras/w10.jpg', '../assets/obras/w12.jpg'] },
+      { name: 'Horizontes', years: '2022—2024', thumbs: ['../assets/obras/w05.jpg', '../assets/obras/w07.jpg', '../assets/obras/w02.jpg'] },
+      { name: 'Formas', years: '2022—2024', thumbs: ['../assets/obras/w03.jpg', '../assets/obras/w09.jpg', '../assets/obras/w11.jpg'] },
+      { name: 'Papeles', years: '2021', thumbs: ['../assets/obras/w04.jpg', '../assets/obras/w08.jpg'] }
+    ];
+    const tones = ['#F2F2F2', '#00B3FF', '#F2F2F2', '#FF48B0'];
+    const views = [
+      { label: 'OBRA COMPLETA', src: '../assets/obras/w01.jpg', alt: 'Umbral rojo, vista completa', shadow: '8px 8px 0 #00B3FF, -8px -8px 0 #FF48B0' },
+      { label: 'DETALLE 1', src: '../assets/obras/w01_d1.jpg', alt: 'Umbral rojo, detalle de la superficie', shadow: 'none' },
+      { label: 'DETALLE 2', src: '../assets/obras/w01_d2.jpg', alt: 'Umbral rojo, detalle del borde', shadow: 'none' },
+      { label: 'EN SALA', src: '../assets/obras/w01_sala.jpg', alt: 'Umbral rojo colgada en sala', shadow: 'none' }
+    ];
+    const i = (this.state && this.state.i) || 0;
+    return {
+      homeWorks: works.map((w, k) => ({ src: w[0], title: w[1], year: w[2], titleUp: w[1].toUpperCase(), num: String(k + 1).padStart(2, '0') })),
+      cols: cols.map((c, k) => ({ ...c, thumbs: c.thumbs.map((s) => ({ src: s })), nameUp: c.name.toUpperCase(), count: String(c.thumbs.length).padStart(2, '0'), num: String(k + 1).padStart(2, '0'), color: tones[k] })),
+      cur: views[i],
+      views: views.map((v, k) => ({ ...v, pressed: k === i ? 'true' : 'false', border: k === i ? '#FF48B0' : '#0A0A0A', pick: () => this.setState({ i: k }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

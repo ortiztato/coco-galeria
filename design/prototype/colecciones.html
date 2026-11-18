@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Cartel — Colecciones</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Six+Caps&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0A}
+a{color:inherit}a:hover{color:#FF48B0}
+.grain{background-image:url(../assets/grain.png);background-size:300px 300px}
+</style>
+</helmet>
+<div class="grain" style="min-height: 100vh; background-color: #0A0A0A; color: #F2F2F2; font-family: 'JetBrains Mono', ui-monospace, monospace; display: flex; flex-direction: column">
+  <div style="overflow: hidden; white-space: nowrap; background: #C6FF00; color: #0A0A0A; font-size: 13px; font-weight: 700; padding: 7px 0" aria-hidden="true">★ NOMBRE APELLIDO ★ OBRA 2020—2024 ★ 12 OBRAS · 4 COLECCIONES ★ NOMBRE APELLIDO ★ OBRA 2020—2024 ★ 12 OBRAS · 4 COLECCIONES ★ NOMBRE APELLIDO ★</div>
+  <header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 32px; padding: 16px clamp(20px, 3vw, 40px); border-bottom: 2px solid #F2F2F2; font-size: 14px; font-weight: 700">
+    <a href="home.html" style="font-family: 'Six Caps', sans-serif; font-weight: 400; font-size: 44px; line-height: 1; text-decoration: none">NOMBRE APELLIDO</a>
+    <nav style="display: flex; flex-wrap: wrap; gap: 8px 24px">
+      <a href="home.html" style="text-decoration: none">OBRAS</a>
+      <a href="colecciones.html" style="color: #C6FF00; text-decoration: none">[COLECCIONES]</a>
+      <a href="acerca.html" style="text-decoration: none">ACERCA DE</a>
+      <a href="contacto.html" style="text-decoration: none">CONTACTO</a>
+    </nav>
+  </header>
+
+  <section style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 40px; padding: 24px clamp(20px, 3vw, 40px) 28px">
+    <div style="position: relative; height: clamp(190px, 20vw, 290px); width: min(900px, 100%)">
+      <span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: clamp(190px, 21vw, 300px); line-height: 0.78; color: #FF48B0; mix-blend-mode: screen">COLECCIONES</span>
+      <span style="position: absolute; left: 14px; top: 10px; font-family: 'Six Caps', sans-serif; font-size: clamp(190px, 21vw, 300px); line-height: 0.78; color: #00B3FF; mix-blend-mode: screen">COLECCIONES</span>
+    </div>
+    <p style="margin: 0; max-width: 380px; font-size: 13px; line-height: 1.7; color: #A3A3A3">La obra agrupada en series. Cada colección reúne piezas que comparten una búsqueda, un material o un período.</p>
+  </section>
+
+  <main style="display: flex; flex-direction: column; border-top: 2px solid #F2F2F2">
+    <sc-for list="{{cols}}" as="c" hint-placeholder-count="4">
+      <a href="coleccion.html" style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px 32px; padding: 20px clamp(20px, 3vw, 40px); border-bottom: 1px solid #262626; text-decoration: none; color: #F2F2F2">
+        <span style="width: 40px; font-size: 13px; font-weight: 700; color: #A3A3A3">{{c.num}}</span>
+        <span style="flex: 1 1 360px; display: flex; flex-direction: column; gap: 6px">
+          <span style="font-family: 'Six Caps', sans-serif; font-size: clamp(96px, 10vw, 150px); line-height: 0.88; color: {{c.color}}">{{c.nameUp}}</span>
+          <span style="font-size: 13px; font-weight: 700">{{c.count}} OBRAS · {{c.years}}</span>
+        </span>
+        <span style="display: flex; gap: 8px">
+          <sc-for list="{{c.thumbs}}" as="t" hint-placeholder-count="4">
+            <span style="width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; background: #141414"><img src="{{t.src}}" alt="" style="display: block; max-width: 100%; max-height: 100%"></span>
+          </sc-for>
+        </span>
+        <span style="font-family: 'Six Caps', sans-serif; font-size: 72px; line-height: 1; color: #C6FF00">→</span>
+      </a>
+    </sc-for>
+  </main>
+
+  <footer style="margin-top: auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px; padding: 36px clamp(20px, 3vw, 40px)">
+    <a href="contacto.html" style="position: relative; display: block; height: clamp(140px, 14.6vw, 212px); width: min(720px, 100%); text-decoration: none"><span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: clamp(140px, 15vw, 220px); line-height: 0.78; color: #FF48B0; mix-blend-mode: screen">CONTACTO →</span><span style="position: absolute; left: 12px; top: 8px; font-family: 'Six Caps', sans-serif; font-size: clamp(140px, 15vw, 220px); line-height: 0.78; color: #00B3FF; mix-blend-mode: screen">CONTACTO →</span></a>
+    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; font-size: 13px; font-weight: 700"><a href="#">INSTAGRAM ↗</a><a href="contacto.html">[EMAIL]</a><span style="color: #A3A3A3">© 2026 NOMBRE APELLIDO</span></div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1700}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const cols = [
+      { name: 'Campos de color', years: '2020—2023', thumbs: ['../assets/obras/w01.jpg', '../assets/obras/w06.jpg', '../assets/obras/w10.jpg', '../assets/obras/w12.jpg'] },
+      { name: 'Horizontes', years: '2022—2024', thumbs: ['../assets/obras/w05.jpg', '../assets/obras/w07.jpg', '../assets/obras/w02.jpg'] },
+      { name: 'Formas', years: '2022—2024', thumbs: ['../assets/obras/w03.jpg', '../assets/obras/w09.jpg', '../assets/obras/w11.jpg'] },
+      { name: 'Papeles', years: '2021', thumbs: ['../assets/obras/w04.jpg', '../assets/obras/w08.jpg'] }
+    ];
+    const tones = ['#F2F2F2', '#00B3FF', '#F2F2F2', '#FF48B0'];
+    return { cols: cols.map((c, k) => ({ ...c, thumbs: c.thumbs.map((s) => ({ src: s })), nameUp: c.name.toUpperCase(), count: c.thumbs.length, num: String(k + 1).padStart(2, '0'), color: tones[k] })) };
+  }
+}
+</script>
+</body>
+</html>

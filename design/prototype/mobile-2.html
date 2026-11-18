@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Cartel — Mobile 2</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Six+Caps&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+.grain{background-image:url(../assets/grain.png);background-size:300px 300px}
+.mf{width:100%;box-sizing:border-box;min-height:48px;padding:10px 0;border:0;border-bottom:2px solid #3A3A3A;background:transparent;color:#F2F2F2;font-family:'JetBrains Mono',monospace;font-size:16px;outline:none}
+.mf:focus{border-bottom-color:#C6FF00}
+.mf::placeholder{color:#6B6B6B}
+</style>
+</helmet>
+<div style="width: 1410px; height: 1960px; box-sizing: border-box; padding: 56px 60px; background: #262626; display: flex; gap: 60px; font-family: 'JetBrains Mono', ui-monospace, monospace">
+
+  <!-- COLECCIÓN -->
+  <div style="display: flex; flex-direction: column; gap: 16px">
+    <span style="font-size: 13px; font-weight: 700; color: #C6FF00">Colección — 390 px (tocá MENÚ)</span>
+    <div class="grain" style="position: relative; width: 390px; height: 1800px; overflow: hidden; border-radius: 36px; background-color: #0A0A0A; color: #F2F2F2">
+      <div style="padding: 34px 0 0; background: #C6FF00"><div style="overflow: hidden; white-space: nowrap; color: #0A0A0A; font-size: 11px; font-weight: 700; padding: 5px 0">★ COLECCIÓN 01 ★ CAMPOS DE COLOR ★ 4 OBRAS ★ 2020—2023 ★</div></div>
+      <header style="display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; border-bottom: 2px solid #F2F2F2"><span style="font-family: 'Six Caps', sans-serif; font-size: 34px; line-height: 1">NOMBRE APELLIDO</span><button type="button" onClick="{{openMenu}}" aria-expanded="{{menuExpanded}}" style="height: 44px; padding: 0 14px; border: 0; background: #C6FF00; color: #0A0A0A; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700">MENÚ</button></header>
+      <div style="padding: 12px 16px 0; font-size: 11px; font-weight: 700; color: #A3A3A3"><a href="colecciones.html" style="text-decoration: none">← COLECCIONES</a></div>
+      <div style="position: relative; height: 220px; margin: 10px 16px 0">
+        <span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: 112px; line-height: 0.95; color: #FF48B0; mix-blend-mode: screen">CAMPOS<br>DE COLOR</span>
+        <span style="position: absolute; left: 8px; top: 7px; font-family: 'Six Caps', sans-serif; font-size: 112px; line-height: 0.95; color: #00B3FF; mix-blend-mode: screen">CAMPOS<br>DE COLOR</span>
+      </div>
+      <div style="display: flex; gap: 28px; margin: 0 16px; padding: 10px 0 0; border-top: 2px solid #F2F2F2">
+        <div><div style="font-size: 10px; font-weight: 700; color: #A3A3A3">OBRAS</div><div style="font-family: 'Six Caps', sans-serif; font-size: 48px; line-height: 0.95">04</div></div>
+        <div><div style="font-size: 10px; font-weight: 700; color: #A3A3A3">PERÍODO</div><div style="font-family: 'Six Caps', sans-serif; font-size: 48px; line-height: 0.95">2020—2023</div></div>
+      </div>
+      <p style="margin: 0; padding: 10px 16px 18px; font-size: 12px; line-height: 1.6; color: #D4D4D4">[Texto de la serie: qué busca, cómo surgió, con qué materiales trabaja.]</p>
+      <div style="display: flex; flex-direction: column; gap: 1px; background: #262626; border-top: 1px solid #262626">
+        <sc-for list="{{colWorks}}" as="w" hint-placeholder-count="4">
+          <a href="obra.html" style="display: flex; flex-direction: column; background: #0A0A0A; text-decoration: none">
+            <span style="height: 300px; display: flex; align-items: center; justify-content: center; padding: 28px; box-sizing: border-box; background: #121212"><img src="{{w.src}}" alt="{{w.title}}" style="display: block; max-width: 100%; max-height: 100%"></span>
+            <span style="display: flex; justify-content: space-between; align-items: baseline; padding: 8px 16px 12px"><span style="font-family: 'Six Caps', sans-serif; font-size: 46px; line-height: 0.95">{{w.titleUp}}</span><span style="font-size: 11px; font-weight: 700; color: #A3A3A3">{{w.year}}</span></span>
+          </a>
+        </sc-for>
+      </div>
+
+      <div style="display: {{menuDisplay}}; position: absolute; inset: 0; flex-direction: column; background: #0A0A0A; z-index: 2">
+        <div style="padding: 34px 0 0; background: #C6FF00"><div style="color: #0A0A0A; font-size: 11px; font-weight: 700; padding: 5px 16px">★ MENÚ ★</div></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; border-bottom: 2px solid #F2F2F2"><span style="font-family: 'Six Caps', sans-serif; font-size: 34px; line-height: 1">NOMBRE APELLIDO</span><button type="button" onClick="{{closeMenu}}" style="height: 44px; padding: 0 14px; border: 0; background: #FF48B0; color: #0A0A0A; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700">CERRAR ✕</button></div>
+        <nav style="display: flex; flex-direction: column; padding: 0 16px">
+          <a href="home.html" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #262626; font-family: 'Six Caps', sans-serif; font-size: 120px; line-height: 1; text-decoration: none">OBRAS <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: #A3A3A3">12</span></a>
+          <a href="colecciones.html" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #262626; font-family: 'Six Caps', sans-serif; font-size: 120px; line-height: 1; text-decoration: none; color: #C6FF00">COLECCIONES <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700">04</span></a>
+          <a href="acerca.html" style="display: block; padding: 6px 0; border-bottom: 1px solid #262626; font-family: 'Six Caps', sans-serif; font-size: 120px; line-height: 1; text-decoration: none">ACERCA DE</a>
+          <a href="contacto.html" style="display: block; padding: 6px 0; border-bottom: 1px solid #262626; font-family: 'Six Caps', sans-serif; font-size: 120px; line-height: 1; text-decoration: none; color: #FF48B0">CONTACTO</a>
+        </nav>
+        <div style="display: flex; justify-content: space-between; padding: 20px 16px; font-size: 12px; font-weight: 700"><a href="#">INSTAGRAM ↗</a><span>[EMAIL]</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACERCA -->
+  <div style="display: flex; flex-direction: column; gap: 16px">
+    <span style="font-size: 13px; font-weight: 700; color: #C6FF00">Acerca de — 390 px</span>
+    <div class="grain" style="width: 390px; height: 1800px; overflow: hidden; border-radius: 36px; background-color: #0A0A0A; color: #F2F2F2">
+      <div style="padding: 34px 0 0; background: #C6FF00"><div style="overflow: hidden; white-space: nowrap; color: #0A0A0A; font-size: 11px; font-weight: 700; padding: 5px 0">★ NOMBRE APELLIDO ★ ARTISTA VISUAL ★ [CIUDAD] ★ NOMBRE</div></div>
+      <header style="display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; border-bottom: 2px solid #F2F2F2"><span style="font-family: 'Six Caps', sans-serif; font-size: 34px; line-height: 1">NOMBRE APELLIDO</span><button type="button" style="height: 44px; padding: 0 14px; border: 0; background: #C6FF00; color: #0A0A0A; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700">MENÚ</button></header>
+      <div style="position: relative; height: 150px; margin: 16px 16px 0">
+        <span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: 150px; line-height: 0.78; color: #FF48B0; mix-blend-mode: screen">ACERCA DE</span>
+        <span style="position: absolute; left: 8px; top: 7px; font-family: 'Six Caps', sans-serif; font-size: 150px; line-height: 0.78; color: #00B3FF; mix-blend-mode: screen">ACERCA DE</span>
+      </div>
+      <div style="margin: 18px 26px 0; height: 400px; display: flex; align-items: center; justify-content: center; background: #141414; border: 1px solid #262626; box-shadow: 8px 8px 0 #00B3FF, -8px -8px 0 #FF48B0; font-size: 11px; font-weight: 700; color: #A3A3A3">[FOTO DEL ARTISTA]</div>
+      <div style="padding: 28px 16px 0; font-size: 11px; font-weight: 700; color: #FF48B0">BIO</div>
+      <p style="margin: 6px 16px 0; font-size: 16px; line-height: 1.5">[Nombre Apellido] (n. [año], [ciudad]) es artista visual. Trabaja principalmente en pintura, papel y collage.</p>
+      <p style="margin: 12px 16px 0; font-size: 12px; line-height: 1.7; color: #D4D4D4">[Formación, exposiciones o premios destacados, colecciones que tienen su obra.]</p>
+      <div style="padding: 24px 16px 0; font-size: 11px; font-weight: 700; color: #FF48B0">STATEMENT</div>
+      <p style="margin: 6px 16px 0; padding-top: 10px; border-top: 2px solid #F2F2F2; font-family: 'Six Caps', sans-serif; font-size: 46px; line-height: 1">[UNA FRASE DEL ARTISTA SOBRE SU OBRA.]</p>
+      <div style="margin-top: 24px; padding: 0 16px; font-family: 'Six Caps', sans-serif; font-size: 64px; line-height: 1">TRAYECTORIA</div>
+      <div style="padding: 8px 16px 0">
+        <div style="padding: 10px 0 4px; border-top: 1px solid #262626; font-size: 11px; font-weight: 700; color: #C6FF00">EXPOSICIONES INDIVIDUALES</div>
+        <div style="display: flex; gap: 14px; padding: 6px 0; font-size: 12px; line-height: 1.5"><span style="flex: none; width: 48px; font-weight: 700; color: #A3A3A3">[Año]</span><span>[Exposición], [Espacio], [Ciudad]</span></div>
+        <div style="display: flex; gap: 14px; padding: 6px 0; font-size: 12px; line-height: 1.5"><span style="flex: none; width: 48px; font-weight: 700; color: #A3A3A3">[Año]</span><span>[Exposición], [Espacio], [Ciudad]</span></div>
+        <div style="padding: 10px 0 4px; border-top: 1px solid #262626; font-size: 11px; font-weight: 700; color: #00B3FF">EXPOSICIONES COLECTIVAS</div>
+        <div style="display: flex; gap: 14px; padding: 6px 0; font-size: 12px; line-height: 1.5"><span style="flex: none; width: 48px; font-weight: 700; color: #A3A3A3">[Año]</span><span>[Exposición], [Espacio], [Ciudad]</span></div>
+        <div style="display: flex; gap: 14px; padding: 6px 0; font-size: 12px; line-height: 1.5"><span style="flex: none; width: 48px; font-weight: 700; color: #A3A3A3">[Año]</span><span>[Exposición], [Espacio], [Ciudad]</span></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px; padding: 18px 16px 0">
+        <a href="#" style="display: flex; align-items: center; justify-content: center; height: 48px; border: 1px solid #F2F2F2; font-size: 12px; font-weight: 700; text-decoration: none">DESCARGAR CV (PDF) ↓</a>
+        <a href="contacto.html" style="display: flex; align-items: center; justify-content: center; height: 48px; background: #FF48B0; color: #0A0A0A; font-size: 12px; font-weight: 700; text-decoration: none">CONTACTO →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACTO -->
+  <div style="display: flex; flex-direction: column; gap: 16px">
+    <span style="font-size: 13px; font-weight: 700; color: #C6FF00">Contacto — 390 px (probá enviar)</span>
+    <div class="grain" style="width: 390px; height: 1800px; overflow: hidden; border-radius: 36px; background-color: #0A0A0A; color: #F2F2F2">
+      <div style="padding: 34px 0 0; background: #C6FF00"><div style="overflow: hidden; white-space: nowrap; color: #0A0A0A; font-size: 11px; font-weight: 700; padding: 5px 0">★ ESCRIBIME ★ CONSULTAS ★ EXPOSICIONES ★ PRENSA ★</div></div>
+      <header style="display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; border-bottom: 2px solid #F2F2F2"><span style="font-family: 'Six Caps', sans-serif; font-size: 34px; line-height: 1">NOMBRE APELLIDO</span><button type="button" style="height: 44px; padding: 0 14px; border: 0; background: #C6FF00; color: #0A0A0A; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700">MENÚ</button></header>
+      <div style="position: relative; height: 150px; margin: 16px 16px 0">
+        <span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: 150px; line-height: 0.78; color: #FF48B0; mix-blend-mode: screen">CONTACTO</span>
+        <span style="position: absolute; left: 8px; top: 7px; font-family: 'Six Caps', sans-serif; font-size: 150px; line-height: 0.78; color: #00B3FF; mix-blend-mode: screen">CONTACTO</span>
+      </div>
+      <div style="margin: 14px 16px 0; border-top: 2px solid #F2F2F2">
+        <div style="padding: 10px 0; border-bottom: 1px solid #262626"><div style="font-size: 10px; font-weight: 700; color: #A3A3A3">EMAIL</div><a href="#" style="font-family: 'Six Caps', sans-serif; font-size: 44px; line-height: 1; text-decoration: none">[EMAIL@DOMINIO.COM]</a></div>
+        <div style="padding: 10px 0; border-bottom: 1px solid #262626"><div style="font-size: 10px; font-weight: 700; color: #A3A3A3">INSTAGRAM</div><a href="#" style="font-family: 'Six Caps', sans-serif; font-size: 44px; line-height: 1; text-decoration: none; color: #00B3FF">@[USUARIO] ↗</a></div>
+        <div style="padding: 10px 0; border-bottom: 1px solid #262626"><div style="font-size: 10px; font-weight: 700; color: #A3A3A3">TALLER</div><div style="font-family: 'Six Caps', sans-serif; font-size: 44px; line-height: 1">[CIUDAD], [PAÍS]</div></div>
+      </div>
+
+      <form style="display: {{formDisplay}}; flex-direction: column; gap: 20px; padding: 24px 16px 0">
+        <fieldset style="margin: 0; padding: 0; border: 0">
+          <legend style="padding: 0; margin-bottom: 10px; font-size: 11px; font-weight: 700; color: #FF48B0">MOTIVO</legend>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px">
+            <sc-for list="{{motivos}}" as="m" hint-placeholder-count="3">
+              <button type="button" onClick="{{m.pick}}" aria-pressed="{{m.pressed}}" style="min-height: 44px; padding: 0 12px; border: 1px solid {{m.border}}; background: {{m.bg}}; color: {{m.fg}}; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700">{{m.label}}</button>
+            </sc-for>
+          </div>
+        </fieldset>
+        <label style="display: flex; flex-direction: column; font-size: 11px; font-weight: 700; color: #A3A3A3">NOMBRE<input class="mf" type="text" name="nombre" autocomplete="name" placeholder="Tu nombre"></label>
+        <label style="display: flex; flex-direction: column; font-size: 11px; font-weight: 700; color: #A3A3A3">EMAIL<input class="mf" type="email" name="email" autocomplete="email" placeholder="tu@email.com"></label>
+        <label style="display: flex; flex-direction: column; font-size: 11px; font-weight: 700; color: #A3A3A3">MENSAJE<textarea class="mf" name="mensaje" rows="5" placeholder="Escribí tu mensaje" style="resize: vertical; line-height: 1.6"></textarea></label>
+        <button type="button" onClick="{{send}}" style="height: 56px; border: 0; background: #C6FF00; color: #0A0A0A; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700">ENVIAR MENSAJE →</button>
+      </form>
+
+      <div style="display: {{sentDisplay}}; flex-direction: column; gap: 16px; padding: 28px 16px 0" role="status">
+        <div style="position: relative; height: 155px">
+          <span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: 160px; line-height: 0.78; color: #FF48B0; mix-blend-mode: screen">GRACIAS ★</span>
+          <span style="position: absolute; left: 8px; top: 7px; font-family: 'Six Caps', sans-serif; font-size: 160px; line-height: 0.78; color: #00B3FF; mix-blend-mode: screen">GRACIAS ★</span>
+        </div>
+        <p style="margin: 0; padding-top: 12px; border-top: 2px solid #F2F2F2; font-size: 13px; line-height: 1.6; color: #D4D4D4">Mensaje enviado. Te respondo a la brevedad al email que dejaste.</p>
+        <button type="button" onClick="{{reset}}" style="height: 48px; border: 1px solid #F2F2F2; background: transparent; color: #F2F2F2; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700">ESCRIBIR OTRO MENSAJE</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1410,"height":1960}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const s = this.state || {};
+    const m = s.m || 'obra';
+    const opts = [
+      { k: 'obra', label: 'CONSULTA POR OBRA' },
+      { k: 'expo', label: 'EXPOSICIONES' },
+      { k: 'prensa', label: 'PRENSA' }
+    ];
+    const cw = [
+      { src: '../assets/obras/w01.jpg', title: 'Umbral rojo', year: '2023' },
+      { src: '../assets/obras/w06.jpg', title: 'Tres tiempos', year: '2022' },
+      { src: '../assets/obras/w10.jpg', title: 'Nocturno con línea', year: '2023' },
+      { src: '../assets/obras/w12.jpg', title: 'Bandas', year: '2020' }
+    ];
+    return {
+      colWorks: cw.map((w) => ({ ...w, titleUp: w.title.toUpperCase() })),
+      menuDisplay: s.menu ? 'flex' : 'none',
+      menuExpanded: s.menu ? 'true' : 'false',
+      openMenu: () => this.setState({ menu: true }),
+      closeMenu: () => this.setState({ menu: false }),
+      motivos: opts.map((o) => ({ label: o.label, pressed: o.k === m ? 'true' : 'false', bg: o.k === m ? '#FF48B0' : 'transparent', fg: o.k === m ? '#0A0A0A' : '#F2F2F2', border: o.k === m ? '#FF48B0' : '#3A3A3A', pick: () => this.setState({ m: o.k }) })),
+      formDisplay: s.sent ? 'none' : 'flex',
+      sentDisplay: s.sent ? 'flex' : 'none',
+      send: () => this.setState({ sent: true }),
+      reset: () => this.setState({ sent: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

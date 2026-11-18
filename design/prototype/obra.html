@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Cartel — Obra</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Six+Caps&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0A}
+a{color:inherit}a:hover{color:#FF48B0}
+.grain{background-image:url(../assets/grain.png);background-size:300px 300px}
+</style>
+</helmet>
+<div class="grain" style="min-height: 100vh; background-color: #0A0A0A; color: #F2F2F2; font-family: 'JetBrains Mono', ui-monospace, monospace; display: flex; flex-direction: column">
+  <div style="overflow: hidden; white-space: nowrap; background: #C6FF00; color: #0A0A0A; font-size: 13px; font-weight: 700; padding: 7px 0" aria-hidden="true">★ OBRA 01 / 12 ★ UMBRAL ROJO ★ 2023 ★ ÓLEO SOBRE TELA ★ 160 × 120 CM ★ OBRA 01 / 12 ★ UMBRAL ROJO ★ 2023 ★ ÓLEO SOBRE TELA ★ 160 × 120 CM ★</div>
+  <header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 32px; padding: 16px clamp(20px, 3vw, 40px); border-bottom: 2px solid #F2F2F2; font-size: 14px; font-weight: 700">
+    <a href="home.html" style="font-family: 'Six Caps', sans-serif; font-weight: 400; font-size: 44px; line-height: 1; text-decoration: none">NOMBRE APELLIDO</a>
+    <nav style="display: flex; flex-wrap: wrap; gap: 8px 24px">
+      <a href="home.html" style="color: #C6FF00; text-decoration: none">[OBRAS]</a>
+      <a href="colecciones.html" style="text-decoration: none">COLECCIONES</a>
+      <a href="acerca.html" style="text-decoration: none">ACERCA DE</a>
+      <a href="contacto.html" style="text-decoration: none">CONTACTO</a>
+    </nav>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding: 16px clamp(20px, 3vw, 40px); border-bottom: 1px solid #262626; font-size: 13px; font-weight: 700">
+    <span style="color: #A3A3A3"><a href="home.html" style="color: #A3A3A3">OBRAS</a> / <a href="coleccion.html" style="color: #A3A3A3">CAMPOS DE COLOR</a> / <span style="color: #F2F2F2">UMBRAL ROJO</span></span>
+    <span style="display: flex; gap: 24px"><a href="obra.html" style="text-decoration: none">← BANDAS</a><span style="color: #A3A3A3">01 / 12</span><a href="obra.html" style="text-decoration: none">HORIZONTE GRIS →</a></span>
+  </div>
+
+  <main style="display: flex; flex-wrap: wrap; align-items: flex-start">
+    <section style="flex: 1 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 20px; padding: 40px clamp(20px, 3vw, 40px) 40px">
+      <div style="height: min(78vh, 820px); min-height: 520px; display: flex; align-items: center; justify-content: center; padding: 56px; box-sizing: border-box; background: #121212">
+        <img src="{{cur.src}}" alt="{{cur.alt}}" style="display: block; max-width: 100%; max-height: 100%; box-shadow: {{cur.shadow}}">
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{views}}" as="v" hint-placeholder-count="4">
+          <button type="button" onClick="{{v.pick}}" aria-pressed="{{v.pressed}}" style="display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 6px 14px 6px 6px; border: 1px solid {{v.border}}; background: {{v.bg}}; color: {{v.fg}}; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700">
+            <span style="width: 52px; height: 52px; overflow: hidden; background: #0A0A0A"><img src="{{v.src}}" alt="" style="display: block; width: 100%; height: 100%; object-fit: cover"></span>{{v.label}}
+          </button>
+        </sc-for>
+      </div>
+    </section>
+
+    <aside style="flex: 1 1 420px; max-width: 560px; box-sizing: border-box; padding: 40px clamp(20px, 3vw, 40px) 40px; position: sticky; top: 0">
+      <div style="font-size: 13px; font-weight: 700; color: #FF48B0">N.º 01 — <a href="coleccion.html" style="color: #00B3FF">CAMPOS DE COLOR</a></div>
+      <h1 style="position: relative; height: 320px; margin: 8px 0 0; font-weight: 400">
+        <span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: 160px; line-height: 0.95; color: #FF48B0; mix-blend-mode: screen">UMBRAL<br>ROJO</span>
+        <span style="position: absolute; left: 12px; top: 10px; font-family: 'Six Caps', sans-serif; font-size: 160px; line-height: 0.95; color: #00B3FF; mix-blend-mode: screen" aria-hidden="true">UMBRAL<br>ROJO</span>
+      </h1>
+      <dl style="margin: 20px 0 0; border-top: 2px solid #F2F2F2">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 10px 0; border-bottom: 1px solid #262626"><dt style="font-size: 12px; font-weight: 700; color: #A3A3A3">AÑO</dt><dd style="margin: 0; font-family: 'Six Caps', sans-serif; font-size: 48px; line-height: 1">2023</dd></div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 10px 0; border-bottom: 1px solid #262626"><dt style="font-size: 12px; font-weight: 700; color: #A3A3A3">TÉCNICA</dt><dd style="margin: 0; font-family: 'Six Caps', sans-serif; font-size: 48px; line-height: 1">ÓLEO SOBRE TELA</dd></div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 10px 0; border-bottom: 1px solid #262626"><dt style="font-size: 12px; font-weight: 700; color: #A3A3A3">MEDIDAS</dt><dd style="margin: 0; font-family: 'Six Caps', sans-serif; font-size: 48px; line-height: 1">160 × 120 CM</dd></div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 10px 0; border-bottom: 1px solid #262626"><dt style="font-size: 12px; font-weight: 700; color: #A3A3A3">COLECCIÓN</dt><dd style="margin: 0; font-family: 'Six Caps', sans-serif; font-size: 48px; line-height: 1; color: #00B3FF"><a href="coleccion.html" style="text-decoration: none">CAMPOS DE COLOR</a></dd></div>
+      </dl>
+      <p style="margin: 24px 0 0; font-size: 15px; line-height: 1.75; color: #D4D4D4">Dos campos de color se enfrentan sobre un fondo de rojo profundo. La franja intermedia funciona como un umbral: un lugar de paso entre la luz y la sombra. Pintada en capas finas a lo largo de varios meses, la obra pide ser vista de cerca y en silencio.</p>
+      <a href="contacto.html" style="display: inline-flex; align-items: center; min-height: 48px; margin-top: 28px; padding: 0 20px; background: #FF48B0; color: #0A0A0A; font-size: 13px; font-weight: 700; text-decoration: none">CONSULTAR POR ESTA OBRA →</a>
+    </aside>
+  </main>
+
+  <section style="border-top: 2px solid #F2F2F2">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 20px clamp(20px, 3vw, 40px) 16px">
+      <span style="font-family: 'Six Caps', sans-serif; font-size: 72px; line-height: 1">MÁS DE CAMPOS DE COLOR</span>
+      <a href="coleccion.html" style="font-size: 13px; font-weight: 700; color: #C6FF00; text-decoration: none">VER COLECCIÓN →</a>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 0; border-top: 1px solid #262626">
+      <sc-for list="{{more}}" as="m" hint-placeholder-count="3">
+        <a href="obra.html" style="display: flex; flex-direction: column; background: #0A0A0A; border-right: 1px solid #262626; border-bottom: 1px solid #262626; text-decoration: none; color: #F2F2F2">
+          <span style="height: 280px; display: flex; align-items: center; justify-content: center; padding: 32px; box-sizing: border-box; background: #121212"><img src="{{m.src}}" alt="{{m.title}}" style="display: block; max-width: 100%; max-height: 100%"></span>
+          <span style="display: flex; justify-content: space-between; align-items: baseline; padding: 12px 18px 16px"><span style="font-family: 'Six Caps', sans-serif; font-size: 52px; line-height: 0.95">{{m.titleUp}}</span><span style="font-size: 12px; font-weight: 700; color: #A3A3A3">{{m.year}}</span></span>
+        </a>
+      </sc-for>
+    </div>
+  </section>
+
+  <footer style="margin-top: auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px; padding: 36px clamp(20px, 3vw, 40px)">
+    <a href="contacto.html" style="position: relative; display: block; height: clamp(140px, 14.6vw, 212px); width: min(720px, 100%); text-decoration: none"><span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: clamp(140px, 15vw, 220px); line-height: 0.78; color: #FF48B0; mix-blend-mode: screen">CONTACTO →</span><span style="position: absolute; left: 12px; top: 8px; font-family: 'Six Caps', sans-serif; font-size: clamp(140px, 15vw, 220px); line-height: 0.78; color: #00B3FF; mix-blend-mode: screen">CONTACTO →</span></a>
+    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; font-size: 13px; font-weight: 700"><a href="#">INSTAGRAM ↗</a><a href="contacto.html">[EMAIL]</a><span style="color: #A3A3A3">© 2026 NOMBRE APELLIDO</span></div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const views = [
+      { label: 'OBRA COMPLETA', src: '../assets/obras/w01.jpg', alt: 'Umbral rojo, vista completa', shadow: '14px 14px 0 #00B3FF, -14px -14px 0 #FF48B0' },
+      { label: 'DETALLE 1', src: '../assets/obras/w01_d1.jpg', alt: 'Umbral rojo, detalle de la superficie', shadow: 'none' },
+      { label: 'DETALLE 2', src: '../assets/obras/w01_d2.jpg', alt: 'Umbral rojo, detalle del borde', shadow: 'none' },
+      { label: 'EN SALA', src: '../assets/obras/w01_sala.jpg', alt: 'Umbral rojo colgada en sala, para ver la escala', shadow: 'none' }
+    ];
+    const i = (this.state && this.state.i) || 0;
+    const more = [
+      { src: '../assets/obras/w06.jpg', title: 'Tres tiempos', year: '2022' },
+      { src: '../assets/obras/w10.jpg', title: 'Nocturno con línea', year: '2023' },
+      { src: '../assets/obras/w12.jpg', title: 'Bandas', year: '2020' }
+    ];
+    return {
+      cur: views[i],
+      views: views.map((v, k) => ({ ...v, pressed: k === i ? 'true' : 'false', bg: k === i ? '#FF48B0' : 'transparent', fg: k === i ? '#0A0A0A' : '#F2F2F2', border: k === i ? '#FF48B0' : '#3A3A3A', pick: () => this.setState({ i: k }) })),
+      more: more.map((m) => ({ ...m, titleUp: m.title.toUpperCase() }))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Cartel — Home</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Six+Caps&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0A}
+a{color:inherit}a:hover{color:#FF48B0}
+.grain{background-image:url(../assets/grain.png);background-size:300px 300px}
+</style>
+</helmet>
+<div class="grain" style="min-height: 100vh; background-color: #0A0A0A; color: #F2F2F2; font-family: 'JetBrains Mono', ui-monospace, monospace; display: flex; flex-direction: column">
+  <div style="overflow: hidden; white-space: nowrap; background: #C6FF00; color: #0A0A0A; font-size: 13px; font-weight: 700; padding: 7px 0" aria-hidden="true">★ NOMBRE APELLIDO ★ OBRA 2020—2024 ★ 12 OBRAS · 4 COLECCIONES ★ NOMBRE APELLIDO ★ OBRA 2020—2024 ★ 12 OBRAS · 4 COLECCIONES ★ NOMBRE APELLIDO ★</div>
+  <header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 32px; padding: 16px clamp(20px, 3vw, 40px); border-bottom: 2px solid #F2F2F2; font-size: 14px; font-weight: 700">
+    <a href="home.html" style="font-family: 'Six Caps', sans-serif; font-weight: 400; font-size: 44px; line-height: 1; text-decoration: none">NOMBRE APELLIDO</a>
+    <nav style="display: flex; flex-wrap: wrap; gap: 8px 24px">
+      <a href="home.html" style="color: #C6FF00; text-decoration: none">[OBRAS]</a>
+      <a href="colecciones.html" style="text-decoration: none">COLECCIONES</a>
+      <a href="acerca.html" style="text-decoration: none">ACERCA DE</a>
+      <a href="contacto.html" style="text-decoration: none">CONTACTO</a>
+    </nav>
+  </header>
+
+  <section style="padding: 20px clamp(20px, 3vw, 40px) 0">
+    <div style="position: relative; height: clamp(210px, 27.5vw, 400px)">
+      <span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: clamp(210px, 28vw, 410px); line-height: 0.78; color: #FF48B0; mix-blend-mode: screen; white-space: nowrap">NOMBRE APELLIDO</span>
+      <span style="position: absolute; left: 16px; top: 12px; font-family: 'Six Caps', sans-serif; font-size: clamp(210px, 28vw, 410px); line-height: 0.78; color: #00B3FF; mix-blend-mode: screen; white-space: nowrap">NOMBRE APELLIDO</span>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding: 16px 0; border-top: 2px solid #F2F2F2; font-size: 14px; font-weight: 700">
+      <span>ARTISTA VISUAL · [CIUDAD]</span><span style="color: #C6FF00">OBRA 2020—2024</span><span>PINTURA / PAPEL / COLLAGE</span>
+    </div>
+  </section>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 20px clamp(20px, 3vw, 40px); border-top: 1px solid #262626; border-bottom: 1px solid #262626">
+    <span style="margin-right: 8px; font-size: 12px; font-weight: 700; color: #A3A3A3">FILTRAR</span>
+    <sc-for list="{{filters}}" as="f" hint-placeholder-count="5">
+      <button type="button" onClick="{{f.pick}}" aria-pressed="{{f.pressed}}" style="min-height: 44px; padding: 0 16px; border: 1px solid {{f.border}}; background: {{f.bg}}; color: {{f.fg}}; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700">{{f.label}} <span style="opacity: 0.7">({{f.count}})</span></button>
+    </sc-for>
+    <a href="colecciones.html" style="margin-left: auto; font-size: 13px; font-weight: 700; color: #C6FF00; text-decoration: none">VER COLECCIONES →</a>
+  </div>
+
+  <main style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 0">
+    <sc-for list="{{works}}" as="w" hint-placeholder-count="12">
+      <a href="obra.html" style="display: flex; flex-direction: column; background: #0A0A0A; border-right: 1px solid #262626; border-bottom: 1px solid #262626; text-decoration: none; color: #F2F2F2">
+        <span style="height: 360px; display: flex; align-items: center; justify-content: center; padding: 36px; box-sizing: border-box; background: #121212"><img src="{{w.src}}" alt="{{w.title}}" style="display: block; max-width: 100%; max-height: 100%"></span>
+        <span style="display: flex; flex-direction: column; gap: 2px; padding: 14px 18px 18px">
+          <span style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #A3A3A3"><span>{{w.num}}</span><span>{{w.year}}</span></span>
+          <span style="font-family: 'Six Caps', sans-serif; font-size: 62px; line-height: 0.95">{{w.titleUp}}</span>
+          <span style="font-size: 12px; font-weight: 700; color: #00B3FF">{{w.colUp}}</span>
+        </span>
+      </a>
+    </sc-for>
+  </main>
+
+  <footer style="margin-top: auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px; padding: 36px clamp(20px, 3vw, 40px)">
+    <a href="contacto.html" style="position: relative; display: block; height: clamp(140px, 14.6vw, 212px); width: min(720px, 100%); text-decoration: none"><span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: clamp(140px, 15vw, 220px); line-height: 0.78; color: #FF48B0; mix-blend-mode: screen">CONTACTO →</span><span style="position: absolute; left: 12px; top: 8px; font-family: 'Six Caps', sans-serif; font-size: clamp(140px, 15vw, 220px); line-height: 0.78; color: #00B3FF; mix-blend-mode: screen">CONTACTO →</span></a>
+    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; font-size: 13px; font-weight: 700"><a href="#">INSTAGRAM ↗</a><a href="contacto.html">[EMAIL]</a><span style="color: #A3A3A3">© 2026 NOMBRE APELLIDO</span></div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2400}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const all = [
+      { src: '../assets/obras/w01.jpg', title: 'Umbral rojo', year: '2023', col: 'Campos de color' },
+      { src: '../assets/obras/w05.jpg', title: 'Horizonte gris', year: '2024', col: 'Horizontes' },
+      { src: '../assets/obras/w03.jpg', title: 'Composición con sol', year: '2024', col: 'Formas' },
+      { src: '../assets/obras/w04.jpg', title: 'Vertical ocre', year: '2021', col: 'Papeles' },
+      { src: '../assets/obras/w06.jpg', title: 'Tres tiempos', year: '2022', col: 'Campos de color' },
+      { src: '../assets/obras/w07.jpg', title: 'Monte', year: '2023', col: 'Horizontes' },
+      { src: '../assets/obras/w09.jpg', title: 'Jardín de noviembre', year: '2024', col: 'Formas' },
+      { src: '../assets/obras/w10.jpg', title: 'Nocturno con línea', year: '2023', col: 'Campos de color' },
+      { src: '../assets/obras/w02.jpg', title: 'Corriente', year: '2022', col: 'Horizontes' },
+      { src: '../assets/obras/w11.jpg', title: 'Fragmentos de tierra', year: '2022', col: 'Formas' },
+      { src: '../assets/obras/w08.jpg', title: 'Escritura I', year: '2021', col: 'Papeles' },
+      { src: '../assets/obras/w12.jpg', title: 'Bandas', year: '2020', col: 'Campos de color' }
+    ];
+    const cols = ['Todas', 'Campos de color', 'Horizontes', 'Formas', 'Papeles'];
+    const f = (this.state && this.state.f) || 'Todas';
+    const list = f === 'Todas' ? all : all.filter((w) => w.col === f);
+    return {
+      filters: cols.map((c) => ({ label: c.toUpperCase(), count: c === 'Todas' ? all.length : all.filter((w) => w.col === c).length, pressed: c === f ? 'true' : 'false', bg: c === f ? '#FF48B0' : 'transparent', fg: c === f ? '#0A0A0A' : '#F2F2F2', border: c === f ? '#FF48B0' : '#3A3A3A', pick: () => this.setState({ f: c }) })),
+      works: list.map((w) => ({ ...w, titleUp: w.title.toUpperCase(), colUp: w.col.toUpperCase(), num: String(all.indexOf(w) + 1).padStart(2, '0') }))
+    };
+  }
+}
+</script>
+</body>
+</html>

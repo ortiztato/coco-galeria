@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Cartel — Acerca de</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Six+Caps&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0A}
+a{color:inherit}a:hover{color:#FF48B0}
+.grain{background-image:url(../assets/grain.png);background-size:300px 300px}
+</style>
+</helmet>
+<div class="grain" style="min-height: 100vh; background-color: #0A0A0A; color: #F2F2F2; font-family: 'JetBrains Mono', ui-monospace, monospace; display: flex; flex-direction: column">
+  <div style="overflow: hidden; white-space: nowrap; background: #C6FF00; color: #0A0A0A; font-size: 13px; font-weight: 700; padding: 7px 0" aria-hidden="true">★ NOMBRE APELLIDO ★ ARTISTA VISUAL ★ [CIUDAD] ★ NOMBRE APELLIDO ★ ARTISTA VISUAL ★ [CIUDAD] ★ NOMBRE APELLIDO ★ ARTISTA VISUAL ★ [CIUDAD] ★</div>
+  <header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 32px; padding: 16px clamp(20px, 3vw, 40px); border-bottom: 2px solid #F2F2F2; font-size: 14px; font-weight: 700">
+    <a href="home.html" style="font-family: 'Six Caps', sans-serif; font-weight: 400; font-size: 44px; line-height: 1; text-decoration: none">NOMBRE APELLIDO</a>
+    <nav style="display: flex; flex-wrap: wrap; gap: 8px 24px">
+      <a href="home.html" style="text-decoration: none">OBRAS</a>
+      <a href="colecciones.html" style="text-decoration: none">COLECCIONES</a>
+      <a href="acerca.html" style="color: #C6FF00; text-decoration: none">[ACERCA DE]</a>
+      <a href="contacto.html" style="text-decoration: none">CONTACTO</a>
+    </nav>
+  </header>
+
+  <section style="padding: 24px clamp(20px, 3vw, 40px) 0">
+    <div style="position: relative; height: clamp(210px, 25.5vw, 370px)">
+      <span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: clamp(210px, 26vw, 380px); line-height: 0.78; color: #FF48B0; mix-blend-mode: screen; white-space: nowrap">ACERCA DE</span>
+      <span style="position: absolute; left: 16px; top: 12px; font-family: 'Six Caps', sans-serif; font-size: clamp(210px, 26vw, 380px); line-height: 0.78; color: #00B3FF; mix-blend-mode: screen; white-space: nowrap">ACERCA DE</span>
+    </div>
+  </section>
+
+  <main style="display: flex; flex-wrap: wrap; gap: 0; border-top: 2px solid #F2F2F2">
+    <div style="flex: 1 1 420px; max-width: 600px; box-sizing: border-box; padding: 40px clamp(20px, 3vw, 40px)">
+      <div style="aspect-ratio: 4 / 5; display: flex; align-items: center; justify-content: center; background: #141414; border: 1px solid #262626; box-shadow: 14px 14px 0 #00B3FF, -14px -14px 0 #FF48B0; font-size: 13px; font-weight: 700; color: #A3A3A3">[FOTO DEL ARTISTA EN EL TALLER]</div>
+      <div style="display: flex; justify-content: space-between; margin-top: 28px; font-size: 12px; font-weight: 700; color: #A3A3A3"><span>FOTO: [CRÉDITO]</span><span>TALLER, [CIUDAD]</span></div>
+    </div>
+
+    <div style="flex: 1 1 520px; min-width: 0; box-sizing: border-box; padding: 40px clamp(20px, 3vw, 40px); border-left: 1px solid #262626">
+      <div style="font-size: 13px; font-weight: 700; color: #FF48B0">BIO</div>
+      <p style="margin: 10px 0 0; font-size: 22px; line-height: 1.5; max-width: 680px">[Nombre Apellido] (n. [año], [ciudad]) es artista visual. Trabaja principalmente en pintura, papel y collage. [Formación, talleres, maestros.]</p>
+      <p style="margin: 18px 0 0; font-size: 15px; line-height: 1.75; color: #D4D4D4; max-width: 680px">[Segundo párrafo: dónde vive y trabaja, exposiciones o premios destacados, colecciones públicas o privadas que tienen su obra.]</p>
+
+      <div style="margin-top: 40px; font-size: 13px; font-weight: 700; color: #FF48B0">STATEMENT</div>
+      <blockquote style="position: relative; margin: 10px 0 0; padding: 18px 0 0 0; border-top: 2px solid #F2F2F2">
+        <p style="margin: 0; font-family: 'Six Caps', sans-serif; font-size: 64px; line-height: 1; max-width: 760px">[UNA FRASE DEL ARTISTA SOBRE SU OBRA, EN SUS PALABRAS.]</p>
+        <p style="margin: 18px 0 0; font-size: 15px; line-height: 1.75; color: #D4D4D4; max-width: 680px">[Texto de statement: qué investiga, qué materiales y procesos usa, qué espera que pase frente a la obra. Entre 80 y 150 palabras.]</p>
+      </blockquote>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 32px">
+        <a href="contacto.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; background: #FF48B0; color: #0A0A0A; font-size: 13px; font-weight: 700; text-decoration: none">CONTACTO →</a>
+        <a href="#" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; border: 1px solid #F2F2F2; font-size: 13px; font-weight: 700; text-decoration: none">DESCARGAR CV (PDF) ↓</a>
+      </div>
+    </div>
+  </main>
+
+  <section style="border-top: 2px solid #F2F2F2">
+    <div style="padding: 20px clamp(20px, 3vw, 40px) 8px; font-family: 'Six Caps', sans-serif; font-size: 96px; line-height: 1">TRAYECTORIA</div>
+    <sc-for list="{{cv}}" as="g" hint-placeholder-count="3">
+      <div style="display: flex; flex-wrap: wrap; gap: 8px 32px; padding: 20px clamp(20px, 3vw, 40px); border-top: 1px solid #262626">
+        <div style="flex: 0 0 260px; font-size: 13px; font-weight: 700; color: {{g.color}}">{{g.title}}</div>
+        <div style="flex: 1 1 520px; display: flex; flex-direction: column">
+          <sc-for list="{{g.items}}" as="it" hint-placeholder-count="3">
+            <div style="display: flex; gap: 24px; padding: 8px 0; border-bottom: 1px solid #1C1C1C; font-size: 14px; line-height: 1.5"><span style="flex: 0 0 64px; font-weight: 700; color: #A3A3A3">{{it.y}}</span><span>{{it.t}}</span></div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </section>
+
+  <footer style="margin-top: auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px; padding: 36px clamp(20px, 3vw, 40px); border-top: 1px solid #262626">
+    <a href="contacto.html" style="position: relative; display: block; height: clamp(140px, 14.6vw, 212px); width: min(720px, 100%); text-decoration: none"><span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: clamp(140px, 15vw, 220px); line-height: 0.78; color: #FF48B0; mix-blend-mode: screen">CONTACTO →</span><span style="position: absolute; left: 12px; top: 8px; font-family: 'Six Caps', sans-serif; font-size: clamp(140px, 15vw, 220px); line-height: 0.78; color: #00B3FF; mix-blend-mode: screen">CONTACTO →</span></a>
+    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; font-size: 13px; font-weight: 700"><a href="#">INSTAGRAM ↗</a><a href="contacto.html">[EMAIL]</a><span style="color: #A3A3A3">© 2026 NOMBRE APELLIDO</span></div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2200}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const row = (y) => ({ y, t: '[Exposición], [Espacio], [Ciudad]' });
+    return {
+      cv: [
+        { title: 'EXPOSICIONES INDIVIDUALES', color: '#C6FF00', items: [row('[Año]'), row('[Año]'), row('[Año]')] },
+        { title: 'EXPOSICIONES COLECTIVAS', color: '#00B3FF', items: [row('[Año]'), row('[Año]'), row('[Año]'), row('[Año]')] },
+        { title: 'PREMIOS Y RESIDENCIAS', color: '#FF48B0', items: [{ y: '[Año]', t: '[Premio o residencia], [Institución]' }, { y: '[Año]', t: '[Premio o residencia], [Institución]' }] },
+        { title: 'FORMACIÓN', color: '#F2F2F2', items: [{ y: '[Año]', t: '[Estudio o taller], [Institución], [Ciudad]' }] }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

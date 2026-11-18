@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Cartel — Campos de color</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Six+Caps&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0A}
+a{color:inherit}a:hover{color:#FF48B0}
+.grain{background-image:url(../assets/grain.png);background-size:300px 300px}
+</style>
+</helmet>
+<div class="grain" style="min-height: 100vh; background-color: #0A0A0A; color: #F2F2F2; font-family: 'JetBrains Mono', ui-monospace, monospace; display: flex; flex-direction: column">
+  <div style="overflow: hidden; white-space: nowrap; background: #C6FF00; color: #0A0A0A; font-size: 13px; font-weight: 700; padding: 7px 0" aria-hidden="true">★ COLECCIÓN 01 ★ CAMPOS DE COLOR ★ 4 OBRAS ★ 2020—2023 ★ COLECCIÓN 01 ★ CAMPOS DE COLOR ★ 4 OBRAS ★ 2020—2023 ★ COLECCIÓN 01 ★ CAMPOS DE COLOR ★</div>
+  <header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 32px; padding: 16px clamp(20px, 3vw, 40px); border-bottom: 2px solid #F2F2F2; font-size: 14px; font-weight: 700">
+    <a href="home.html" style="font-family: 'Six Caps', sans-serif; font-weight: 400; font-size: 44px; line-height: 1; text-decoration: none">NOMBRE APELLIDO</a>
+    <nav style="display: flex; flex-wrap: wrap; gap: 8px 24px">
+      <a href="home.html" style="text-decoration: none">OBRAS</a>
+      <a href="colecciones.html" style="color: #C6FF00; text-decoration: none">[COLECCIONES]</a>
+      <a href="acerca.html" style="text-decoration: none">ACERCA DE</a>
+      <a href="contacto.html" style="text-decoration: none">CONTACTO</a>
+    </nav>
+  </header>
+
+  <div style="padding: 16px clamp(20px, 3vw, 40px) 0; font-size: 13px; font-weight: 700; color: #A3A3A3"><a href="colecciones.html" style="color: #A3A3A3">COLECCIONES</a> / <span style="color: #F2F2F2">CAMPOS DE COLOR</span></div>
+
+  <section style="padding: 14px clamp(20px, 3vw, 40px) 0">
+    <div style="position: relative; height: clamp(210px, 25.5vw, 370px)">
+      <span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: clamp(210px, 26vw, 380px); line-height: 0.78; color: #FF48B0; mix-blend-mode: screen; white-space: nowrap">CAMPOS DE COLOR</span>
+      <span style="position: absolute; left: 16px; top: 12px; font-family: 'Six Caps', sans-serif; font-size: clamp(210px, 26vw, 380px); line-height: 0.78; color: #00B3FF; mix-blend-mode: screen; white-space: nowrap">CAMPOS DE COLOR</span>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px 48px; padding: 22px 0 32px; border-top: 2px solid #F2F2F2">
+      <dl style="margin: 0; display: flex; gap: 40px; font-size: 13px; font-weight: 700">
+        <div><dt style="color: #A3A3A3">OBRAS</dt><dd style="margin: 4px 0 0; font-family: 'Six Caps', sans-serif; font-weight: 400; font-size: 72px; line-height: 0.9">04</dd></div>
+        <div><dt style="color: #A3A3A3">PERÍODO</dt><dd style="margin: 4px 0 0; font-family: 'Six Caps', sans-serif; font-weight: 400; font-size: 72px; line-height: 0.9">2020—2023</dd></div>
+      </dl>
+      <p style="margin: 0; max-width: 560px; font-size: 15px; line-height: 1.7; color: #D4D4D4">[Texto de la serie: qué busca, cómo surgió, con qué materiales trabaja. Dos o tres líneas que el artista escribe para presentar la colección.]</p>
+    </div>
+  </section>
+
+  <main style="display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: 0; border-top: 1px solid #262626">
+    <sc-for list="{{works}}" as="w" hint-placeholder-count="4">
+      <a href="obra.html" style="display: flex; flex-direction: column; background: #0A0A0A; border-right: 1px solid #262626; border-bottom: 1px solid #262626; text-decoration: none; color: #F2F2F2">
+        <span style="height: 520px; display: flex; align-items: center; justify-content: center; padding: 48px; box-sizing: border-box; background: #121212"><img src="{{w.src}}" alt="{{w.title}}" style="display: block; max-width: 100%; max-height: 100%"></span>
+        <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 14px 20px 18px">
+          <span style="font-family: 'Six Caps', sans-serif; font-size: 72px; line-height: 0.95">{{w.titleUp}}</span>
+          <span style="font-size: 12px; font-weight: 700; color: #A3A3A3; text-align: right">{{w.year}}<br>{{w.tech}}</span>
+        </span>
+      </a>
+    </sc-for>
+  </main>
+
+  <section style="padding: 36px clamp(20px, 3vw, 40px) 24px">
+    <div style="font-size: 13px; font-weight: 700; color: #FF48B0; margin-bottom: 10px">OTRAS COLECCIONES</div>
+    <div style="display: flex; flex-direction: column">
+      <a href="coleccion.html" style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-top: 1px solid #262626; text-decoration: none"><span style="font-family: 'Six Caps', sans-serif; font-size: 80px; line-height: 1">HORIZONTES</span><span style="font-size: 13px; font-weight: 700">03 OBRAS →</span></a>
+      <a href="coleccion.html" style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-top: 1px solid #262626; text-decoration: none; color: #00B3FF"><span style="font-family: 'Six Caps', sans-serif; font-size: 80px; line-height: 1">FORMAS</span><span style="font-size: 13px; font-weight: 700">03 OBRAS →</span></a>
+      <a href="coleccion.html" style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-top: 1px solid #262626; border-bottom: 1px solid #262626; text-decoration: none"><span style="font-family: 'Six Caps', sans-serif; font-size: 80px; line-height: 1">PAPELES</span><span style="font-size: 13px; font-weight: 700">02 OBRAS →</span></a>
+    </div>
+  </section>
+
+  <footer style="margin-top: auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px; padding: 28px clamp(20px, 3vw, 40px) 36px">
+    <a href="contacto.html" style="position: relative; display: block; height: clamp(140px, 14.6vw, 212px); width: min(720px, 100%); text-decoration: none"><span style="position: absolute; left: 0; top: 0; font-family: 'Six Caps', sans-serif; font-size: clamp(140px, 15vw, 220px); line-height: 0.78; color: #FF48B0; mix-blend-mode: screen">CONTACTO →</span><span style="position: absolute; left: 12px; top: 8px; font-family: 'Six Caps', sans-serif; font-size: clamp(140px, 15vw, 220px); line-height: 0.78; color: #00B3FF; mix-blend-mode: screen">CONTACTO →</span></a>
+    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; font-size: 13px; font-weight: 700"><a href="#">INSTAGRAM ↗</a><a href="contacto.html">[EMAIL]</a><span style="color: #A3A3A3">© 2026 NOMBRE APELLIDO</span></div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2400}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const w = [
+      { src: '../assets/obras/w01.jpg', title: 'Umbral rojo', year: '2023', tech: 'ÓLEO SOBRE TELA · 160×120' },
+      { src: '../assets/obras/w06.jpg', title: 'Tres tiempos', year: '2022', tech: 'ACRÍLICO SOBRE TELA · 110×110' },
+      { src: '../assets/obras/w10.jpg', title: 'Nocturno con línea', year: '2023', tech: 'ÓLEO SOBRE TELA · 130×162' },
+      { src: '../assets/obras/w12.jpg', title: 'Bandas', year: '2020', tech: 'ACRÍLICO SOBRE TELA · 140×70' }
+    ];
+    return { works: w.map((x) => ({ ...x, titleUp: x.title.toUpperCase() })) };
+  }
+}
+</script>
+</body>
+</html>
