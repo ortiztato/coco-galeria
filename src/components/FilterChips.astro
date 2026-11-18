@@ -1,0 +1,119 @@
+---
+// Grupo de chips de selección (filtro de la home, motivo del formulario).
+// Un solo chip activo a la vez, con aria-pressed. Al cambiar dispara el evento "chips:cambio"
+// en el contenedor, con detail = {valor}, para que cada página haga lo suyo (filtrar, cambiar un campo…).
+interface Opcion {
+  valor: string
+  label: string
+  conteo?: number
+}
+
+interface Props {
+  opciones: Opcion[]
+  activo?: string
+  /** Nombre accesible del grupo, ej. "Filtrar por colección". */
+  etiqueta: string
+  /** Etiqueta visible a la izquierda, ej. "Filtrar". */
+  etiquetaVisible?: string
+  id?: string
+  class?: string
+}
+
+const {opciones, activo = opciones[0]?.valor, etiqueta, etiquetaVisible, id, class: className} = Astro.props
+---
+
+<div class:list={['filter-chips', className]} role="group" aria-label={etiqueta} id={id} data-chips>
+  {etiquetaVisible && <span class="etiqueta" aria-hidden="true">{etiquetaVisible}</span>}
+  {
+    opciones.map((o) => (
+      <button type="button" class="chip" aria-pressed={o.valor === activo ? 'true' : 'false'} data-valor={o.valor}>
+        {o.label}
+        {o.conteo !== undefined && <span class="conteo">({o.conteo})</span>}
+      </button>
+    ))
+  }
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-chips]').forEach((grupo) => {
+    grupo.addEventListener('click', (e) => {
+      const chip = (e.target as HTMLElement).closest<HTMLButtonElement>('.chip')
+      if (!chip || chip.getAttribute('aria-pressed') === 'true') return
+      grupo.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', String(c === chip)))
+      grupo.dispatchEvent(new CustomEvent('chips:cambio', {detail: {valor: chip.dataset.valor}, bubbles: true}))
+    })
+  })
+</script>
+
+<style>
+  .filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .etiqueta {
+    margin-right: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6ch;
+    min-height: 44px;
+    padding: 0 16px;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .chip[aria-pressed='true'] {
+    border-color: var(--pink);
+    background: var(--pink);
+    color: var(--bg);
+  }
+
+  @media (hover: hover) {
+    .chip[aria-pressed='false']:hover {
+      border-color: var(--text);
+    }
+  }
+
+  .conteo {
+    opacity: 0.7;
+  }
+
+  @media (max-width: 767.98px) {
+    /* En mobile los chips van en una fila con scroll horizontal. */
+    .filter-chips {
+      flex-wrap: nowrap;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .filter-chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .etiqueta {
+      display: none;
+    }
+
+    .chip {
+      flex: none;
+      padding: 0 12px;
+      font-size: 11px;
+    }
+  }
+</style>

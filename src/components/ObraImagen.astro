@@ -1,0 +1,41 @@
+---
+// Imagen de una obra dentro de un marco: centrada y sin recorte (max-width/max-height: 100%).
+// width/height reales evitan saltos de layout.
+import type {Imagen} from '../lib/tipos'
+
+interface Props {
+  imagen: Imagen
+  /** Atributo sizes para el srcset. */
+  sizes?: string
+  /** La primera imagen visible de la página va con eager. */
+  eager?: boolean
+  /** Para miniaturas decorativas dentro de un link que ya tiene nombre. */
+  decorativa?: boolean
+  class?: string
+}
+
+const {imagen, sizes, eager = false, decorativa = false, class: className} = Astro.props
+---
+
+<img
+  class:list={['obra-img', className]}
+  src={imagen.src}
+  srcset={imagen.srcset}
+  sizes={imagen.srcset ? sizes : undefined}
+  width={imagen.width}
+  height={imagen.height}
+  alt={decorativa ? '' : imagen.alt}
+  loading={eager ? 'eager' : 'lazy'}
+  fetchpriority={eager ? 'high' : undefined}
+  decoding="async"
+/>
+
+<style>
+  .obra-img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+  }
+</style>

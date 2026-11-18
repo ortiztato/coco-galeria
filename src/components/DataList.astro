@@ -1,0 +1,80 @@
+---
+// Datos de la obra: lista <dl> con línea de 2px arriba. Etiqueta Mono a la izquierda, valor en Six Caps a la derecha.
+interface Dato {
+  etiqueta: string
+  valor: string
+  href?: string
+  color?: 'cian'
+}
+
+interface Props {
+  datos: Dato[]
+  class?: string
+}
+
+const {datos, class: className} = Astro.props
+---
+
+<dl class:list={['data-list', className]}>
+  {
+    datos.map((d) => (
+      <div class="fila">
+        <dt>{d.etiqueta}</dt>
+        <dd class:list={{cian: d.color === 'cian'}}>{d.href ? <a href={d.href}>{d.valor}</a> : d.valor}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .data-list {
+    border-top: 2px solid var(--text);
+  }
+
+  .fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  dt {
+    flex: none;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  dd {
+    font-family: var(--font-display);
+    font-size: 48px;
+    line-height: 1;
+    text-align: right;
+    text-transform: uppercase;
+  }
+
+  dd.cian {
+    color: var(--cyan);
+  }
+
+  dd a {
+    text-decoration: none;
+  }
+
+  @media (max-width: 767.98px) {
+    .fila {
+      padding: 6px 0;
+    }
+
+    dt {
+      font-size: 11px;
+    }
+
+    dd {
+      font-size: 36px;
+    }
+  }
+</style>

@@ -1,0 +1,235 @@
+---
+// Fila de listado de ancho completo, separada por líneas de 1px.
+//   coleccion → listado de colecciones: número, nombre grande, "04 OBRAS · 2020—2023", miniaturas y flecha ácida
+//   compacta  → "Otras colecciones": nombre 80 px y a la derecha "03 OBRAS →"
+import ObraImagen from './ObraImagen.astro'
+import type {ColorFila, Imagen} from '../lib/tipos'
+
+interface Props {
+  href: string
+  nombre: string
+  /** Texto de metadatos, ej. "04 obras · 2020—2023". */
+  meta: string
+  numero?: string
+  color?: ColorFila
+  miniaturas?: Imagen[]
+  variante?: 'coleccion' | 'compacta'
+}
+
+const {href, nombre, meta, numero, color = 'texto', miniaturas = [], variante = 'coleccion'} = Astro.props
+---
+
+{
+  variante === 'coleccion' ? (
+    <a class:list={['list-row', `list-row--${color}`]} href={href}>
+      <span class="num">{numero}</span>
+      <span class="cuerpo">
+        <span class="nombre">{nombre}</span>
+        <span class="meta">
+          <span class="num-m">{numero} · </span>
+          {meta}
+        </span>
+      </span>
+      {miniaturas.length > 0 && (
+        <span class="miniaturas">
+          {miniaturas.map((m) => (
+            <span class="mini">
+              <ObraImagen imagen={m} sizes="110px" decorativa />
+            </span>
+          ))}
+        </span>
+      )}
+      <span class="flecha" aria-hidden="true">→</span>
+    </a>
+  ) : (
+    <a class:list={['list-row-c', `list-row--${color}`]} href={href}>
+      <span class="nombre-c">{nombre}</span>
+      <span class="meta-c">
+        {meta} <span aria-hidden="true">→</span>
+      </span>
+    </a>
+  )
+}
+
+<style>
+  .list-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px 32px;
+    padding: 20px var(--gutter);
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .num {
+    width: 40px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .cuerpo {
+    flex: 1 1 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .nombre {
+    font-family: var(--font-display);
+    font-size: clamp(96px, 10vw, 150px);
+    line-height: 0.88;
+    text-transform: uppercase;
+  }
+
+  .list-row--cian .nombre,
+  .list-row--cian.list-row-c {
+    color: var(--cyan);
+  }
+
+  .list-row--rosa .nombre,
+  .list-row--rosa.list-row-c {
+    color: var(--pink);
+  }
+
+  .meta {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .num-m {
+    display: none;
+    color: var(--muted);
+  }
+
+  .miniaturas {
+    display: flex;
+    gap: 8px;
+  }
+
+  .mini {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 110px;
+    height: 110px;
+    padding: 10px;
+    background: var(--surface);
+  }
+
+  .flecha {
+    font-family: var(--font-display);
+    font-size: 72px;
+    line-height: 1;
+    color: var(--acid);
+    transition: transform 0.15s;
+  }
+
+  @media (hover: hover) {
+    .list-row:hover .nombre {
+      color: var(--pink);
+    }
+
+    .list-row--rosa.list-row:hover .nombre {
+      color: var(--text);
+    }
+
+    .list-row:hover .flecha {
+      transform: translateX(6px);
+    }
+  }
+
+  /* Compacta */
+  .list-row-c {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 4px 0;
+    border-top: 1px solid var(--line);
+    text-decoration: none;
+  }
+
+  .list-row-c:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nombre-c {
+    font-family: var(--font-display);
+    font-size: 80px;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .meta-c {
+    flex: none;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 767.98px) {
+    .list-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 10px 12px;
+      padding: 16px;
+    }
+
+    .num {
+      display: none;
+    }
+
+    .cuerpo {
+      display: contents;
+    }
+
+    .nombre {
+      grid-column: 1;
+      grid-row: 1;
+      font-size: 88px;
+      line-height: 0.85;
+      white-space: normal;
+    }
+
+    .flecha {
+      grid-column: 2;
+      grid-row: 1;
+      font-size: 52px;
+    }
+
+    .meta {
+      grid-column: 1 / -1;
+      font-size: 11px;
+    }
+
+    .num-m {
+      display: inline;
+    }
+
+    .miniaturas {
+      grid-column: 1 / -1;
+      gap: 6px;
+      overflow: hidden;
+    }
+
+    .mini {
+      flex: none;
+      width: 82px;
+      height: 82px;
+      padding: 8px;
+    }
+
+    .nombre-c {
+      font-size: 56px;
+    }
+
+    .meta-c {
+      font-size: 11px;
+    }
+  }
+</style>

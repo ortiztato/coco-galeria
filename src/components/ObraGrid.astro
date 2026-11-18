@@ -1,0 +1,43 @@
+---
+// Grilla de tarjetas sin gap: las líneas son el borde derecho e inferior de cada tarjeta,
+// así las celdas vacías quedan negras. Home / "más de": columnas de 300 px mín. (2 en mobile).
+// Colección: columnas de 440 px mín. (1 en mobile).
+interface Props {
+  variante?: 'home' | 'coleccion' | 'mas'
+  /** Línea de 1px arriba de la grilla. */
+  bordeSuperior?: boolean
+  id?: string
+}
+
+const {variante = 'home', bordeSuperior = false, id} = Astro.props
+---
+
+<div class:list={['obra-grid', `obra-grid--${variante}`, {'obra-grid--borde': bordeSuperior}]} id={id} data-obra-grid>
+  <slot />
+</div>
+
+<style>
+  .obra-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0;
+  }
+
+  .obra-grid--coleccion {
+    grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+  }
+
+  .obra-grid--borde {
+    border-top: 1px solid var(--line);
+  }
+
+  @media (max-width: 767.98px) {
+    .obra-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .obra-grid--coleccion {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
