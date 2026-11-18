@@ -1,0 +1,137 @@
+---
+// Título sobreimpreso: dos capas (rosa + cian) con mix-blend-mode: screen.
+// El texto real va una sola vez; la copia cian lleva aria-hidden.
+// Alto del contenedor = 0.92 × font-size × líneas + desplazamiento vertical (ver DESIGN.md),
+// así nunca se monta sobre lo que sigue. Se puede pisar con `height` para usar los valores exactos del diseño.
+type Tag = 'span' | 'div' | 'p' | 'h1' | 'h2' | 'h3'
+
+interface Props {
+  /** Una línea, o varias (cada elemento es una línea). */
+  text: string | string[]
+  /** Líneas para mobile (< 768 px), si se parten distinto. */
+  mobileText?: string | string[]
+  as?: Tag
+  /** font-size en CSS, ej. "clamp(210px, 28vw, 410px)". */
+  size: string
+  mobileSize?: string
+  /** Alto del contenedor. Por defecto se calcula. */
+  height?: string
+  mobileHeight?: string
+  /** Desplazamiento de la capa cian [x, y] en px. */
+  offset?: [number, number]
+  mobileOffset?: [number, number]
+  class?: string
+}
+
+const {
+  text,
+  mobileText,
+  as: Tag = 'span',
+  size,
+  mobileSize = size,
+  height,
+  mobileHeight,
+  offset = [16, 12],
+  mobileOffset = [8, 7],
+  class: className,
+} = Astro.props
+
+const toLines = (t: string | string[]) => (Array.isArray(t) ? t : [t])
+const lines = toLines(text)
+const linesM = toLines(mobileText ?? text)
+const splitMobile = mobileText !== undefined && linesM.join(' ') !== lines.join(' ')
+
+const lh = (n: number) => (n > 1 ? 0.95 : 0.78)
+const calcHeight = (s: string, n: number, dy: number) => `calc(0.92 * ${s} * ${n} + ${dy}px)`
+
+const vars = [
+  `--op-size:${size}`,
+  `--op-size-m:${mobileSize}`,
+  `--op-lh:${lh(lines.length)}`,
+  `--op-lh-m:${lh(linesM.length)}`,
+  `--op-h:${height ?? calcHeight(size, lines.length, offset[1])}`,
+  `--op-h-m:${mobileHeight ?? calcHeight(mobileSize, linesM.length, mobileOffset[1])}`,
+  `--op-dx:${offset[0]}px`,
+  `--op-dy:${offset[1]}px`,
+  `--op-dx-m:${mobileOffset[0]}px`,
+  `--op-dy-m:${mobileOffset[1]}px`,
+].join(';')
+---
+
+<Tag class:list={['overprint', className]} style={vars}>
+  {splitMobile ? (
+    <>
+      {/* Texto real una sola vez (para lectores de pantalla); las dos capas visibles son decorativas. */}
+      <span class="sr-only">{lines.join(' ')}</span>
+      {['ink-1', 'ink-2'].map((ink) => (
+        <span class={`ink ${ink}`} aria-hidden="true">
+          <span class="op-desktop">{lines.map((l, i) => (<>{i > 0 && <br />}{l}</>))}</span>
+          <span class="op-mobile">{linesM.map((l, i) => (<>{i > 0 && <br />}{l}</>))}</span>
+        </span>
+      ))}
+    </>
+  ) : (
+    <>
+      <span class="ink ink-1">{lines.map((l, i) => (<>{i > 0 && <br />}{l}</>))}</span>
+      <span class="ink ink-2" aria-hidden="true">{lines.map((l, i) => (<>{i > 0 && <br />}{l}</>))}</span>
+    </>
+  )}
+</Tag>
+
+<style>
+  .overprint {
+    position: relative;
+    display: block;
+    height: var(--op-h);
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--op-size);
+    line-height: var(--op-lh);
+    text-transform: uppercase;
+    white-space: nowrap;
+    isolation: isolate;
+  }
+
+  .ink {
+    position: absolute;
+    left: 0;
+    top: 0;
+    mix-blend-mode: screen;
+  }
+
+  .ink-1 {
+    color: var(--pink);
+  }
+
+  .ink-2 {
+    left: var(--op-dx);
+    top: var(--op-dy);
+    color: var(--cyan);
+  }
+
+  .op-mobile {
+    display: none;
+  }
+
+  @media (max-width: 767.98px) {
+    .overprint {
+      height: var(--op-h-m);
+      font-size: var(--op-size-m);
+      line-height: var(--op-lh-m);
+    }
+
+    .ink-2 {
+      left: var(--op-dx-m);
+      top: var(--op-dy-m);
+    }
+
+    .op-desktop {
+      display: none;
+    }
+
+    .op-mobile {
+      display: inline;
+    }
+  }
+</style>

@@ -1,13 +1,9 @@
 ---
-// Placeholder hasta el paso 2 (tokens y layout).
+import Base from '../layouts/Base.astro'
+import {sitio} from '../lib/sitio'
+
+// Por ahora sólo el layout. El hero, el filtro y la grilla llegan en el paso 4.
+const marquesina = [sitio.nombre, 'Obra 2020—2024', `${sitio.totalObras} obras · ${sitio.totalColecciones} colecciones`]
 ---
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Cartel</title>
-  </head>
-  <body>
-    <p>Proyecto base listo. El Studio está en <a href="/admin">/admin</a>.</p>
-  </body>
-</html>
+
+<Base seccion="obras" marquesina={marquesina} />

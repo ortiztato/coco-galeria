@@ -1,0 +1,256 @@
+---
+import {navegacion, sitio, instagramUrl, type Seccion} from '../lib/sitio'
+
+interface Props {
+  actual?: Seccion
+}
+
+const {actual} = Astro.props
+const contadores: Partial<Record<Seccion, string>> = {
+  obras: String(sitio.totalObras),
+  colecciones: String(sitio.totalColecciones).padStart(2, '0'),
+}
+---
+
+<header class="header">
+  <a class="logo" href="/">{sitio.nombre}</a>
+
+  <nav class="nav" aria-label="Principal">
+    {
+      navegacion.map((item) => (
+        <a
+          href={item.href}
+          class:list={{activo: item.id === actual}}
+          aria-current={item.id === actual ? 'page' : undefined}
+        >
+          {item.id === actual ? `[${item.label}]` : item.label}
+        </a>
+      ))
+    }
+  </nav>
+
+  <button type="button" class="menu-abrir" aria-expanded="false" aria-controls="menu-mobile" data-menu-abrir>
+    Menú
+  </button>
+</header>
+
+<div id="menu-mobile" class="menu grain" role="dialog" aria-modal="true" aria-label="Menú" hidden data-menu>
+  <div class="menu-barra" aria-hidden="true">★ MENÚ ★</div>
+  <div class="menu-head">
+    <a class="logo" href="/">{sitio.nombre}</a>
+    <button type="button" class="menu-cerrar" data-menu-cerrar>Cerrar ✕</button>
+  </div>
+  <nav class="menu-nav" aria-label="Principal (menú)">
+    {
+      navegacion.map((item) => (
+        <a
+          href={item.href}
+          class:list={['menu-item', {activo: item.id === actual, cta: item.id === 'contacto' && item.id !== actual}]}
+          aria-current={item.id === actual ? 'page' : undefined}
+        >
+          {item.label}
+          {contadores[item.id] && <span class="menu-conteo">{contadores[item.id]}</span>}
+        </a>
+      ))
+    }
+  </nav>
+  <div class="menu-pie">
+    <a href={instagramUrl(sitio.instagram)} target="_blank" rel="noopener">Instagram ↗</a>
+    <a href={`mailto:${sitio.email}`}>{sitio.email}</a>
+  </div>
+</div>
+
+<script>
+  const abrir = document.querySelector<HTMLButtonElement>('[data-menu-abrir]')
+  const cerrar = document.querySelector<HTMLButtonElement>('[data-menu-cerrar]')
+  const menu = document.querySelector<HTMLElement>('[data-menu]')
+  const mobile = window.matchMedia('(max-width: 767.98px)')
+
+  function setMenu(abierto: boolean) {
+    if (!abrir || !menu) return
+    menu.hidden = !abierto
+    abrir.setAttribute('aria-expanded', String(abierto))
+    document.documentElement.style.overflow = abierto ? 'hidden' : ''
+    const destino = abierto ? cerrar : abrir
+    destino?.focus()
+  }
+
+  abrir?.addEventListener('click', () => setMenu(true))
+  cerrar?.addEventListener('click', () => setMenu(false))
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu && !menu.hidden) setMenu(false)
+  })
+  // Si la ventana pasa a desktop con el menú abierto, se cierra.
+  mobile.addEventListener('change', (e) => {
+    if (!e.matches && menu && !menu.hidden) setMenu(false)
+  })
+</script>
+
+<style>
+  .header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px 32px;
+    padding: 16px var(--gutter);
+    border-bottom: 2px solid var(--text);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 1;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+  }
+
+  .nav a {
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .nav a.activo {
+    color: var(--acid);
+  }
+
+  .menu-abrir,
+  .menu-cerrar {
+    display: none;
+    height: 44px;
+    padding: 0 14px;
+    border: 0;
+    color: var(--bg);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .menu-abrir {
+    background: var(--acid);
+  }
+
+  .menu-cerrar {
+    display: block;
+    background: var(--pink);
+  }
+
+  /* Panel del menú mobile (pantalla completa) */
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    color: var(--text);
+  }
+
+  .menu[hidden] {
+    display: none;
+  }
+
+  .menu-barra {
+    padding: 5px 16px;
+    background: var(--acid);
+    color: var(--bg);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .menu-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 2px solid var(--text);
+  }
+
+  .menu-head .logo {
+    font-size: 34px;
+  }
+
+  .menu-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px;
+  }
+
+  .menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-display);
+    font-size: 120px;
+    line-height: 1;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .menu-item.activo {
+    color: var(--acid);
+  }
+
+  .menu-item.cta {
+    color: var(--pink);
+  }
+
+  .menu-conteo {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .menu-item.activo .menu-conteo {
+    color: inherit;
+  }
+
+  .menu-pie {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .menu-pie a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: none;
+  }
+
+  @media (max-width: 767.98px) {
+    .header {
+      flex-wrap: nowrap;
+      padding: 8px 16px;
+    }
+
+    .header .logo {
+      font-size: 34px;
+    }
+
+    .nav {
+      display: none;
+    }
+
+    .menu-abrir {
+      display: block;
+    }
+  }
+</style>

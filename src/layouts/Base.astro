@@ -1,0 +1,65 @@
+---
+import '@fontsource/six-caps'
+import '@fontsource/jetbrains-mono/400.css'
+import '@fontsource/jetbrains-mono/700.css'
+import '../styles/global.css'
+
+import Marquee from '../components/Marquee.astro'
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+import {sitio, type Seccion} from '../lib/sitio'
+
+interface Props {
+  /** Título de la página (sin el nombre del artista). */
+  titulo?: string
+  descripcion?: string
+  /** Sección activa en la navegación. */
+  seccion?: Seccion
+  /** Frases de la marquesina de esta página. */
+  marquesina: string[]
+  footer?: 'completo' | 'corto'
+}
+
+const {titulo, descripcion, seccion, marquesina, footer = 'completo'} = Astro.props
+const tituloCompleto = titulo ? `${titulo} — ${sitio.nombre}` : sitio.nombre
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloCompleto}</title>
+    {descripcion && <meta name="description" content={descripcion} />}
+    <meta name="theme-color" content="#0A0A0A" />
+  </head>
+  <body class="grain">
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <div class="pagina">
+      <Marquee items={marquesina} />
+      <Header actual={seccion} />
+      <main id="contenido" tabindex="-1">
+        <slot />
+      </main>
+      <Footer variante={footer} />
+    </div>
+  </body>
+</html>
+
+<style>
+  .pagina {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  main:focus {
+    outline: none;
+  }
+</style>

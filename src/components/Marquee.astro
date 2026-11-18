@@ -1,0 +1,59 @@
+---
+// Marquesina: barra ácida de ancho completo con frases separadas por ★. Decorativa (aria-hidden).
+// Se desplaza lento en loop; con prefers-reduced-motion queda quieta.
+interface Props {
+  items: string[]
+}
+
+const {items} = Astro.props
+const frase = `★ ${items.map((t) => t.toUpperCase()).join(' ★ ')} `
+// Repetimos la frase para que una mitad del recorrido siempre cubra pantallas anchas.
+const mitad = Array.from({length: 6}, () => frase).join('')
+---
+
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    <span>{mitad}</span><span>{mitad}</span>
+  </div>
+</div>
+
+<style>
+  .marquee {
+    overflow: hidden;
+    white-space: nowrap;
+    background: var(--acid);
+    color: var(--bg);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+    padding: 7px 0;
+  }
+
+  .track {
+    display: inline-flex;
+    animation: desplazar 90s linear infinite;
+  }
+
+  .track span {
+    white-space: pre;
+  }
+
+  @keyframes desplazar {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .track {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .marquee {
+      font-size: 11px;
+      padding: 5px 0;
+    }
+  }
+</style>
