@@ -1,6 +1,7 @@
 ---
 import Overprint from './Overprint.astro'
-import {sitio, instagramUrl} from '../lib/sitio'
+import {instagramUrl} from '../lib/sitio'
+import {getSitio} from '../lib/contenido'
 
 interface Props {
   /** "corto": versión de una línea que usa la página de contacto. */
@@ -8,8 +9,9 @@ interface Props {
 }
 
 const {variante = 'completo'} = Astro.props
+const {config} = (await getSitio()).contenido
 const anio = new Date().getFullYear()
-const copy = `© ${anio} ${sitio.nombre.toUpperCase()}`
+const copy = `© ${anio} ${config.nombre.toUpperCase()}`
 ---
 
 {
@@ -27,8 +29,8 @@ const copy = `© ${anio} ${sitio.nombre.toUpperCase()}`
         />
       </a>
       <div class="datos">
-        <a href={instagramUrl(sitio.instagram)} target="_blank" rel="noopener">Instagram ↗</a>
-        <a href={`mailto:${sitio.email}`}>{sitio.email}</a>
+        {config.instagram && <a href={instagramUrl(config.instagram)} target="_blank" rel="noopener">Instagram ↗</a>}
+        {config.email && <a href={`mailto:${config.email}`}>{config.email}</a>}
         <span class="copy">{copy}</span>
       </div>
     </footer>
@@ -36,7 +38,7 @@ const copy = `© ${anio} ${sitio.nombre.toUpperCase()}`
     <footer class="footer-corto">
       <span class="copy">{copy}</span>
       <span class="links">
-        <a href={instagramUrl(sitio.instagram)} target="_blank" rel="noopener">Instagram ↗</a>
+        {config.instagram && <a href={instagramUrl(config.instagram)} target="_blank" rel="noopener">Instagram ↗</a>}
         <a href="/">Obras</a>
         <a href="/acerca">Acerca de</a>
       </span>

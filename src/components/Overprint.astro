@@ -3,6 +3,7 @@
 // El texto real va una sola vez; la copia cian lleva aria-hidden.
 // Alto del contenedor = 0.92 × font-size × líneas + desplazamiento vertical (ver DESIGN.md),
 // así nunca se monta sobre lo que sigue. Se puede pisar con `height` para usar los valores exactos del diseño.
+// Con `ajustar`, el texto se parte solo según el ancho disponible (títulos de obra) y el alto sale del propio texto.
 type Tag = 'span' | 'div' | 'p' | 'h1' | 'h2' | 'h3'
 
 interface Props {
@@ -20,6 +21,8 @@ interface Props {
   /** Desplazamiento de la capa cian [x, y] en px. */
   offset?: [number, number]
   mobileOffset?: [number, number]
+  /** El texto se parte en líneas según el ancho disponible; el alto sale del texto. */
+  ajustar?: boolean
   class?: string
 }
 
@@ -33,15 +36,16 @@ const {
   mobileHeight,
   offset = [16, 12],
   mobileOffset = [8, 7],
+  ajustar = false,
   class: className,
 } = Astro.props
 
 const toLines = (t: string | string[]) => (Array.isArray(t) ? t : [t])
 const lines = toLines(text)
 const linesM = toLines(mobileText ?? text)
-const splitMobile = mobileText !== undefined && linesM.join(' ') !== lines.join(' ')
+const splitMobile = linesM.length !== lines.length || linesM.some((l, i) => l !== lines[i])
 
-const lh = (n: number) => (n > 1 ? 0.95 : 0.78)
+const lh = (n: number) => (n > 1 || ajustar ? 0.95 : 0.78)
 const calcHeight = (s: string, n: number, dy: number) => `calc(0.92 * ${s} * ${n} + ${dy}px)`
 
 const vars = [
@@ -58,7 +62,7 @@ const vars = [
 ].join(';')
 ---
 
-<Tag class:list={['overprint', className]} style={vars}>
+<Tag class:list={['overprint', {'overprint--ajustar': ajustar}, className]} style={vars}>
   {splitMobile ? (
     <>
       {/* Texto real una sola vez (para lectores de pantalla); las dos capas visibles son decorativas. */}
@@ -114,9 +118,33 @@ const vars = [
     display: none;
   }
 
+  /* Modo ajustar: la capa rosa queda en el flujo y define el alto; la cian se superpone con el mismo ancho. */
+  .overprint--ajustar {
+    height: auto;
+    padding-bottom: var(--op-dy);
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+
+  .overprint--ajustar .ink-1 {
+    position: relative;
+    display: block;
+  }
+
+  .overprint--ajustar .ink-2 {
+    width: 100%;
+  }
+
   @media (max-width: 767.98px) {
-    .overprint {
+    .overprint--ajustar {
+      padding-bottom: var(--op-dy-m);
+    }
+
+    .overprint:not(.overprint--ajustar) {
       height: var(--op-h-m);
+    }
+
+    .overprint {
       font-size: var(--op-size-m);
       line-height: var(--op-lh-m);
     }

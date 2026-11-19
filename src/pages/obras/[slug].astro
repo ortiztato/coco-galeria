@@ -1,0 +1,540 @@
+---
+// Página de obra: migas + anterior/siguiente; a la izquierda el marco grande con la vista activa y los
+// botones de vistas; a la derecha (sticky) número, colección, título, datos, descripción y consulta.
+// Abajo, "Más de [colección]". En mobile todo va en una columna y anterior/siguiente pasa al final.
+import type {GetStaticPaths} from 'astro'
+import Base from '../../layouts/Base.astro'
+import Overprint from '../../components/Overprint.astro'
+import DataList from '../../components/DataList.astro'
+import Button from '../../components/Button.astro'
+import ObraGrid from '../../components/ObraGrid.astro'
+import ObraCard from '../../components/ObraCard.astro'
+import ObraImagen from '../../components/ObraImagen.astro'
+import {getSitio} from '../../lib/contenido'
+import {hrefColeccion, hrefObra, medidasTexto} from '../../lib/derivados'
+import {dosCifras, partirEnDos} from '../../lib/texto'
+import type {Vista} from '../../lib/tipos'
+
+export const getStaticPaths = (async () => {
+  const {contenido} = await getSitio()
+  return contenido.obras.map((obra) => ({params: {slug: obra.slug}, props: {slug: obra.slug}}))
+}) satisfies GetStaticPaths
+
+const {slug} = Astro.props
+const {contenido, d} = await getSitio()
+const obra = contenido.obras.find((o) => o.slug === slug)!
+const coleccion = d.coleccionDe(obra)
+const {anterior, siguiente} = d.vecinas(obra)
+const masDe = coleccion ? d.obrasDe(coleccion.slug).filter((o) => o.slug !== obra.slug) : []
+const medidas = medidasTexto(obra)
+
+// Vistas: la obra completa primero, después detalles / en sala / otras.
+let nDetalle = 0
+let nOtra = 0
+const etiquetaVista = (v: Vista) => {
+  if (v.tipo === 'detalle') return `Detalle ${++nDetalle}`
+  if (v.tipo === 'sala') return 'En sala'
+  return `Otra vista ${++nOtra}`
+}
+const vistas = [{etiqueta: 'Obra completa', imagen: obra.imagen, registro: true}, ...obra.vistas.map((v) => ({etiqueta: etiquetaVista(v), imagen: v.imagen, registro: false}))]
+
+const datos = [
+  {etiqueta: 'Año', valor: String(obra.anio)},
+  {etiqueta: 'Técnica', valor: obra.tecnica},
+  ...(medidas ? [{etiqueta: 'Medidas', valor: medidas}] : []),
+  ...(coleccion ? [{etiqueta: 'Colección', valor: coleccion.nombre, href: hrefColeccion(coleccion.slug), color: 'cian' as const}] : []),
+]
+const posicion = `${d.numero(obra)} / ${dosCifras(d.total)}`
+---
+
+<Base titulo={obra.titulo} seccion="obras" marquesina={d.marquesina.obra(obra)} descripcion={obra.descripcion}>
+  <div class="barra">
+    <nav class="migas" aria-label="Migas de pan">
+      <span class="solo-desktop">
+        <a href="/">Obras</a>
+        {
+          coleccion && (
+            <>
+              <span aria-hidden="true"> / </span>
+              <a href={hrefColeccion(coleccion.slug)}>{coleccion.nombre}</a>
+            </>
+          )
+        }
+        <span aria-hidden="true"> / </span>
+        <span class="actual" aria-current="page">{obra.titulo}</span>
+      </span>
+      <a href="/" class="solo-mobile">← Obras</a>
+    </nav>
+    <div class="vecinas">
+      {anterior && <a class="solo-desktop" href={hrefObra(anterior.slug)} rel="prev">← {anterior.titulo}</a>}
+      <span class="posicion">{posicion}</span>
+      {siguiente && <a class="solo-desktop" href={hrefObra(siguiente.slug)} rel="next">{siguiente.titulo} →</a>}
+    </div>
+  </div>
+
+  <div class="obra">
+    <section class="visor" aria-label="Imágenes de la obra">
+      <div class="marco" data-visor>
+        {
+          vistas.map((v, i) => (
+            <div class="vista" data-vista={i} hidden={i !== 0}>
+              <ObraImagen
+                imagen={v.imagen}
+                sizes="(max-width: 767.98px) 100vw, 60vw"
+                eager={i === 0}
+                class={v.registro ? 'registro' : undefined}
+              />
+            </div>
+          ))
+        }
+      </div>
+
+      {
+        vistas.length > 1 && (
+          <>
+            <div class="selector" role="group" aria-label="Vistas de la obra">
+              {vistas.map((v, i) => (
+                <button type="button" class="boton-vista" aria-pressed={i === 0 ? 'true' : 'false'} aria-label={v.etiqueta} data-ir-a={i}>
+                  <span class="mini">
+                    <img src={v.imagen.src} alt="" width={v.imagen.width} height={v.imagen.height} loading="lazy" decoding="async" />
+                  </span>
+                  <span class="etiqueta-vista" aria-hidden="true">{v.etiqueta}</span>
+                </button>
+              ))}
+            </div>
+            <p class="vista-actual" aria-live="polite" data-vista-actual>
+              {vistas[0].etiqueta}
+            </p>
+          </>
+        )
+      }
+    </section>
+
+    <aside class="ficha">
+      <p class="numero">
+        N.º {d.numero(obra)}
+        {
+          coleccion && (
+            <>
+              {' — '}
+              <a href={hrefColeccion(coleccion.slug)}>{coleccion.nombre}</a>
+            </>
+          )
+        }
+      </p>
+      <Overprint as="h1" text={partirEnDos(obra.titulo)} ajustar size="160px" mobileSize="100px" offset={[12, 10]} class="titulo" />
+      <DataList datos={datos} class="datos" />
+      {obra.descripcion && <p class="descripcion">{obra.descripcion}</p>}
+      <Button variante="rosa" href={`/contacto?obra=${obra.slug}`} class="consultar">Consultar por esta obra →</Button>
+    </aside>
+  </div>
+
+  {
+    (anterior || siguiente) && (
+      <nav class="vecinas-mobile" aria-label="Otras obras">
+        {anterior && (
+          <a href={hrefObra(anterior.slug)} rel="prev">
+            <span class="dir">← Anterior</span>
+            <span class="nombre">{anterior.titulo}</span>
+          </a>
+        )}
+        {siguiente && (
+          <a href={hrefObra(siguiente.slug)} rel="next" class="sig">
+            <span class="dir">Siguiente →</span>
+            <span class="nombre">{siguiente.titulo}</span>
+          </a>
+        )}
+      </nav>
+    )
+  }
+
+  {
+    coleccion && masDe.length > 0 && (
+      <section class="mas">
+        <div class="mas-head">
+          <h2 class="mas-titulo">Más de {coleccion.nombre}</h2>
+          <a class="ver" href={hrefColeccion(coleccion.slug)}>Ver colección →</a>
+        </div>
+        <ObraGrid variante="mas" bordeSuperior>
+          {masDe.map((o) => <ObraCard obra={d.resumen(o)} variante="mas" />)}
+        </ObraGrid>
+      </section>
+    )
+  }
+</Base>
+
+<script>
+  // Cambio de vista: muestra la imagen elegida en el marco y marca el botón con aria-pressed.
+  document.querySelectorAll<HTMLButtonElement>('[data-ir-a]').forEach((boton) => {
+    boton.addEventListener('click', () => {
+      const i = boton.dataset.irA
+      document.querySelectorAll<HTMLElement>('[data-vista]').forEach((v) => (v.hidden = v.dataset.vista !== i))
+      document.querySelectorAll('[data-ir-a]').forEach((b) => b.setAttribute('aria-pressed', String(b === boton)))
+      const etiqueta = document.querySelector('[data-vista-actual]')
+      if (etiqueta) etiqueta.textContent = boton.getAttribute('aria-label')
+    })
+  })
+</script>
+
+<style>
+  .barra {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 24px;
+    padding: 16px var(--gutter);
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .migas {
+    color: var(--muted);
+  }
+
+  .migas .actual {
+    color: var(--text);
+  }
+
+  .vecinas {
+    display: flex;
+    gap: 24px;
+  }
+
+  .vecinas a {
+    text-decoration: none;
+  }
+
+  .posicion {
+    color: var(--muted);
+  }
+
+  .solo-mobile,
+  .vecinas-mobile {
+    display: none;
+  }
+
+  /* Columnas */
+  .obra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .visor {
+    flex: 1 1 640px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 40px var(--gutter);
+  }
+
+  .marco {
+    height: min(78vh, 820px);
+    min-height: 520px;
+    padding: 56px;
+    background: var(--frame);
+  }
+
+  .vista {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .vista[hidden] {
+    display: none;
+  }
+
+  .vista :global(.registro) {
+    box-shadow: 14px 14px 0 var(--cyan), -14px -14px 0 var(--pink);
+  }
+
+  .selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .boton-vista {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 64px;
+    padding: 6px 14px 6px 6px;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .boton-vista[aria-pressed='true'] {
+    border-color: var(--pink);
+    background: var(--pink);
+    color: var(--bg);
+  }
+
+  @media (hover: hover) {
+    .boton-vista[aria-pressed='false']:hover {
+      border-color: var(--text);
+    }
+  }
+
+  .mini {
+    width: 52px;
+    height: 52px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .mini img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .vista-actual {
+    display: none;
+  }
+
+  .ficha {
+    position: sticky;
+    top: 0;
+    flex: 1 1 420px;
+    max-width: 560px;
+    padding: 40px var(--gutter);
+  }
+
+  .numero {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pink);
+    text-transform: uppercase;
+  }
+
+  .numero a {
+    color: var(--cyan);
+  }
+
+  .ficha :global(.titulo) {
+    margin-top: 8px;
+  }
+
+  .ficha :global(.datos) {
+    margin-top: 20px;
+  }
+
+  .descripcion {
+    margin-top: 24px;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-body);
+  }
+
+  .ficha :global(.consultar) {
+    margin-top: 28px;
+  }
+
+  /* Más de esta colección */
+  .mas {
+    border-top: 2px solid var(--text);
+  }
+
+  .mas-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px 24px;
+    padding: 20px var(--gutter) 16px;
+  }
+
+  .mas-titulo {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 72px;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .ver {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--acid);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 767.98px) {
+    .barra {
+      flex-wrap: nowrap;
+      padding: 12px var(--gutter);
+      border-bottom: 0;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .migas a {
+      text-decoration: none;
+    }
+
+    .solo-desktop {
+      display: none;
+    }
+
+    .solo-mobile {
+      display: inline;
+    }
+
+    .visor {
+      flex-basis: 100%;
+      gap: 0;
+      padding: 0 var(--gutter);
+    }
+
+    .marco {
+      height: 430px;
+      min-height: 0;
+      padding: 30px;
+    }
+
+    .vista :global(.registro) {
+      box-shadow: 8px 8px 0 var(--cyan), -8px -8px 0 var(--pink);
+    }
+
+    .selector {
+      flex-wrap: nowrap;
+      gap: 6px;
+      padding-top: 12px;
+    }
+
+    .boton-vista {
+      flex: 1;
+      min-width: 0;
+      height: 64px;
+      padding: 0;
+      border: 3px solid var(--line-strong);
+      background: var(--bg);
+    }
+
+    .boton-vista[aria-pressed='true'] {
+      background: var(--bg);
+    }
+
+    .mini {
+      width: 100%;
+      height: 100%;
+    }
+
+    .etiqueta-vista {
+      display: none;
+    }
+
+    .vista-actual {
+      display: block;
+      padding-top: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--pink);
+      text-transform: uppercase;
+    }
+
+    .ficha {
+      position: static;
+      flex-basis: 100%;
+      max-width: none;
+      padding: 18px var(--gutter) 0;
+    }
+
+    .numero {
+      font-size: 11px;
+    }
+
+    .ficha :global(.titulo) {
+      margin-top: 6px;
+    }
+
+    .ficha :global(.datos) {
+      margin-top: 10px;
+    }
+
+    .descripcion {
+      margin-top: 16px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .ficha :global(.consultar) {
+      display: flex;
+      width: 100%;
+      min-height: 52px;
+      margin-top: 18px;
+    }
+
+    .vecinas-mobile {
+      display: flex;
+      margin-top: 18px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .vecinas-mobile a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      padding: 12px 16px;
+      text-decoration: none;
+    }
+
+    .vecinas-mobile a + a {
+      border-left: 1px solid var(--line);
+    }
+
+    .vecinas-mobile .sig {
+      align-items: flex-end;
+      text-align: right;
+    }
+
+    .vecinas-mobile a:only-child.sig {
+      margin-left: auto;
+    }
+
+    .dir {
+      color: var(--muted);
+    }
+
+    .nombre {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .mas {
+      margin-top: 28px;
+    }
+
+    .mas-head {
+      padding: 16px var(--gutter) 12px;
+    }
+
+    .mas-titulo {
+      font-size: 48px;
+    }
+
+    .ver {
+      font-size: 11px;
+    }
+  }
+</style>

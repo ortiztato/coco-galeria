@@ -1,0 +1,84 @@
+---
+// Listado de colecciones: hero + una fila por colección con miniaturas de todas sus obras.
+import Base from '../../layouts/Base.astro'
+import Overprint from '../../components/Overprint.astro'
+import ListRow from '../../components/ListRow.astro'
+import {getSitio} from '../../lib/contenido'
+import {hrefColeccion, periodo} from '../../lib/derivados'
+import {colorFila} from '../../lib/tipos'
+
+const {d} = await getSitio()
+---
+
+<Base titulo="Colecciones" seccion="colecciones" marquesina={d.marquesina.colecciones}>
+  <section class="hero">
+    <Overprint
+      as="h1"
+      class="titulo"
+      text="Colecciones"
+      size="clamp(190px, 21vw, 300px)"
+      height="clamp(190px, 20vw, 290px)"
+      offset={[14, 10]}
+      mobileSize="150px"
+      mobileHeight="150px"
+    />
+    <p class="intro">La obra agrupada en series. Cada colección reúne piezas que comparten una búsqueda, un material o un período.</p>
+  </section>
+
+  <div class="lista">
+    {
+      d.coleccionesConObras.map((c, i) => {
+        const obras = d.obrasDe(c.slug)
+        return (
+          <ListRow
+            href={hrefColeccion(c.slug)}
+            nombre={c.nombre}
+            numero={d.numeroColeccion(c)}
+            meta={`${obras.length} ${obras.length === 1 ? 'obra' : 'obras'} · ${periodo(obras)}`}
+            color={colorFila(i)}
+            miniaturas={obras.map((o) => o.imagen)}
+          />
+        )
+      })
+    }
+  </div>
+</Base>
+
+<style>
+  .hero {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px 40px;
+    padding: 24px var(--gutter) 28px;
+  }
+
+  .hero :global(.titulo) {
+    width: min(900px, 100%);
+  }
+
+  .intro {
+    max-width: 380px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  .lista {
+    border-top: 2px solid var(--text);
+  }
+
+  @media (max-width: 767.98px) {
+    .hero {
+      display: block;
+      padding: 16px var(--gutter) 18px;
+    }
+
+    .intro {
+      padding-top: 12px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+  }
+</style>

@@ -15,14 +15,16 @@ interface Props {
   etiqueta: string
   /** Etiqueta visible a la izquierda, ej. "Filtrar". */
   etiquetaVisible?: string
+  /** En mobile, los chips bajan de línea en vez de deslizarse de costado. */
+  envolver?: boolean
   id?: string
   class?: string
 }
 
-const {opciones, activo = opciones[0]?.valor, etiqueta, etiquetaVisible, id, class: className} = Astro.props
+const {opciones, activo = opciones[0]?.valor, etiqueta, etiquetaVisible, envolver = false, id, class: className} = Astro.props
 ---
 
-<div class:list={['filter-chips', className]} role="group" aria-label={etiqueta} id={id} data-chips>
+<div class:list={['filter-chips', {'filter-chips--envolver': envolver}, className]} role="group" aria-label={etiqueta} id={id} data-chips>
   {etiquetaVisible && <span class="etiqueta" aria-hidden="true">{etiquetaVisible}</span>}
   {
     opciones.map((o) => (
@@ -104,6 +106,11 @@ const {opciones, activo = opciones[0]?.valor, etiqueta, etiquetaVisible, id, cla
 
     .filter-chips::-webkit-scrollbar {
       display: none;
+    }
+
+    .filter-chips--envolver {
+      flex-wrap: wrap;
+      overflow-x: visible;
     }
 
     .etiqueta {

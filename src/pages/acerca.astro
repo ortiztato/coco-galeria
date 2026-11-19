@@ -1,0 +1,386 @@
+---
+// Acerca de: hero, foto con sombra de registro + crédito, bio, statement, botones y trayectoria.
+import Base from '../layouts/Base.astro'
+import Overprint from '../components/Overprint.astro'
+import Button from '../components/Button.astro'
+import ObraImagen from '../components/ObraImagen.astro'
+import {getSitio} from '../lib/contenido'
+
+const {contenido, d} = await getSitio()
+const {acerca} = contenido
+const coloresCv = ['acid', 'cian', 'rosa', 'texto']
+const cv = acerca.cv.filter((s) => s.entradas.length > 0)
+---
+
+<Base titulo="Acerca de" seccion="acerca" marquesina={d.marquesina.acerca} descripcion={acerca.bioDestacada}>
+  <section class="hero">
+    <Overprint
+      as="h1"
+      text="Acerca de"
+      size="clamp(210px, 26vw, 380px)"
+      height="clamp(210px, 25.5vw, 370px)"
+      mobileSize="150px"
+      mobileHeight="150px"
+    />
+  </section>
+
+  <div class="cuerpo">
+    <div class="col-foto">
+      {
+        acerca.foto ? (
+          <figure class="foto">
+            <ObraImagen imagen={acerca.foto} sizes="(max-width: 767.98px) 90vw, 560px" eager class="foto-img" />
+          </figure>
+        ) : (
+          <div class="foto foto-vacia" aria-hidden="true">
+            [Foto del artista en el taller]
+          </div>
+        )
+      }
+      {
+        (acerca.creditoFoto || acerca.lugarFoto) && (
+          <p class="credito">
+            <span>{acerca.creditoFoto && `Foto: ${acerca.creditoFoto}`}</span>
+            <span>{acerca.lugarFoto}</span>
+          </p>
+        )
+      }
+    </div>
+
+    <div class="col-texto">
+      {
+        (acerca.bioDestacada || acerca.bio) && (
+          <>
+            <h2 class="rotulo">Bio</h2>
+            {acerca.bioDestacada && <p class="bio-destacada">{acerca.bioDestacada}</p>}
+            {acerca.bio && <p class="parrafo">{acerca.bio}</p>}
+          </>
+        )
+      }
+
+      {
+        (acerca.statementFrase || acerca.statement) && (
+          <>
+            <h2 class="rotulo rotulo-statement">Statement</h2>
+            <blockquote class="statement">
+              {acerca.statementFrase && <p class="frase">{acerca.statementFrase}</p>}
+              {acerca.statement && <p class="parrafo">{acerca.statement}</p>}
+            </blockquote>
+          </>
+        )
+      }
+
+      <div class="botones solo-desktop">
+        <Button variante="rosa" href="/contacto">Contacto →</Button>
+        {acerca.cvPdfUrl && <Button variante="secundario" href={acerca.cvPdfUrl} target="_blank" rel="noopener">Descargar CV (PDF) ↓</Button>}
+      </div>
+    </div>
+  </div>
+
+  {
+    cv.length > 0 && (
+      <section class="trayectoria">
+        <h2 class="tray-titulo">Trayectoria</h2>
+        {cv.map((seccion, i) => (
+          <div class="grupo">
+            <h3 class:list={['grupo-titulo', coloresCv[i % coloresCv.length]]}>{seccion.titulo}</h3>
+            <ul class="entradas">
+              {seccion.entradas.map((e) => (
+                <li>
+                  <span class="anio">{e.anio}</span>
+                  <span>{e.texto}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </section>
+    )
+  }
+
+  <div class="botones solo-mobile">
+    {acerca.cvPdfUrl && <Button variante="secundario" href={acerca.cvPdfUrl} target="_blank" rel="noopener" bloque>Descargar CV (PDF) ↓</Button>}
+    <Button variante="rosa" href="/contacto" bloque>Contacto →</Button>
+  </div>
+</Base>
+
+<style>
+  .hero {
+    padding: 24px var(--gutter) 0;
+  }
+
+  .cuerpo {
+    display: flex;
+    flex-wrap: wrap;
+    border-top: 2px solid var(--text);
+  }
+
+  .col-foto {
+    flex: 1 1 420px;
+    max-width: 600px;
+    padding: 40px var(--gutter);
+  }
+
+  .foto {
+    box-shadow: 14px 14px 0 var(--cyan), -14px -14px 0 var(--pink);
+  }
+
+  .foto :global(.foto-img) {
+    width: 100%;
+    max-height: none;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .foto-vacia {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4 / 5;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .credito {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 28px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .col-texto {
+    flex: 1 1 520px;
+    min-width: 0;
+    padding: 40px var(--gutter);
+    border-left: 1px solid var(--line);
+  }
+
+  .rotulo {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pink);
+    text-transform: uppercase;
+  }
+
+  .rotulo-statement {
+    margin-top: 40px;
+  }
+
+  .bio-destacada {
+    max-width: 680px;
+    margin-top: 10px;
+    font-size: 22px;
+    line-height: 1.5;
+  }
+
+  .parrafo {
+    max-width: 680px;
+    margin-top: 18px;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-body);
+  }
+
+  .statement {
+    margin: 10px 0 0;
+    padding-top: 18px;
+    border-top: 2px solid var(--text);
+  }
+
+  .frase {
+    max-width: 760px;
+    font-family: var(--font-display);
+    font-size: 64px;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 32px;
+  }
+
+  .solo-mobile {
+    display: none;
+  }
+
+  .trayectoria {
+    border-top: 2px solid var(--text);
+  }
+
+  .tray-titulo {
+    padding: 20px var(--gutter) 8px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 96px;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .grupo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 32px;
+    padding: 20px var(--gutter);
+    border-top: 1px solid var(--line);
+  }
+
+  .grupo-titulo {
+    flex: 0 0 260px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .acid {
+    color: var(--acid);
+  }
+
+  .cian {
+    color: var(--cyan);
+  }
+
+  .rosa {
+    color: var(--pink);
+  }
+
+  .entradas {
+    flex: 1 1 520px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .entradas li {
+    display: flex;
+    gap: 24px;
+    padding: 8px 0;
+    border-bottom: 1px solid #1c1c1c;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .anio {
+    flex: 0 0 64px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  @media (max-width: 767.98px) {
+    .hero {
+      padding-top: 16px;
+    }
+
+    .cuerpo {
+      display: block;
+      border-top: 0;
+    }
+
+    .col-foto {
+      max-width: none;
+      padding: 18px 26px 0;
+    }
+
+    .foto {
+      box-shadow: 8px 8px 0 var(--cyan), -8px -8px 0 var(--pink);
+    }
+
+    .foto-vacia {
+      aspect-ratio: auto;
+      height: 400px;
+      font-size: 11px;
+    }
+
+    .credito {
+      margin-top: 18px;
+      font-size: 10px;
+    }
+
+    .col-texto {
+      padding: 28px var(--gutter) 0;
+      border-left: 0;
+    }
+
+    .rotulo {
+      font-size: 11px;
+    }
+
+    .rotulo-statement {
+      margin-top: 24px;
+    }
+
+    .bio-destacada {
+      margin-top: 6px;
+      font-size: 16px;
+    }
+
+    .parrafo {
+      margin-top: 12px;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .statement {
+      margin-top: 6px;
+      padding-top: 10px;
+    }
+
+    .frase {
+      font-size: 46px;
+    }
+
+    .solo-desktop {
+      display: none;
+    }
+
+    .solo-mobile {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 0;
+      padding: 18px var(--gutter) 0;
+    }
+
+    .trayectoria {
+      margin-top: 24px;
+      border-top: 0;
+    }
+
+    .tray-titulo {
+      padding: 0 var(--gutter);
+      font-size: 64px;
+    }
+
+    .grupo {
+      display: block;
+      padding: 0 var(--gutter);
+      border-top: 0;
+    }
+
+    .grupo-titulo {
+      padding: 10px 0 4px;
+      border-top: 1px solid var(--line);
+      font-size: 11px;
+    }
+
+    .entradas li {
+      gap: 14px;
+      padding: 6px 0;
+      border-bottom: 0;
+      font-size: 12px;
+    }
+
+    .anio {
+      flex-basis: 48px;
+    }
+  }
+</style>

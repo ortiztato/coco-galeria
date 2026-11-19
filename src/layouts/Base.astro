@@ -7,7 +7,8 @@ import '../styles/global.css'
 import Marquee from '../components/Marquee.astro'
 import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
-import {sitio, type Seccion} from '../lib/sitio'
+import {type Seccion} from '../lib/sitio'
+import {getSitio} from '../lib/contenido'
 
 interface Props {
   /** Título de la página (sin el nombre del artista). */
@@ -21,7 +22,8 @@ interface Props {
 }
 
 const {titulo, descripcion, seccion, marquesina, footer = 'completo'} = Astro.props
-const tituloCompleto = titulo ? `${titulo} — ${sitio.nombre}` : sitio.nombre
+const {config} = (await getSitio()).contenido
+const tituloCompleto = titulo ? `${titulo} — ${config.nombre}` : config.nombre
 ---
 
 <!doctype html>

@@ -1,0 +1,469 @@
+---
+// Contacto: a la izquierda email, Instagram, taller y representación; a la derecha el formulario.
+// El motivo cambia la etiqueta del tercer campo. Con ?obra=<slug> se precarga la obra.
+// Paso 4: el envío se simula (validación + estado "enviado"). Paso 7: se conecta a Web3Forms.
+import Base from '../layouts/Base.astro'
+import Overprint from '../components/Overprint.astro'
+import FilterChips from '../components/FilterChips.astro'
+import Button from '../components/Button.astro'
+import {getSitio} from '../lib/contenido'
+import {instagramUrl} from '../lib/sitio'
+
+const {contenido, d} = await getSitio()
+const {config, obras} = contenido
+const taller = [config.ciudad, config.pais].filter(Boolean).join(', ')
+
+const motivos = [
+  {valor: 'obra', label: 'Consulta por una obra', campo: 'Obra', placeholder: 'Ej.: Umbral rojo, 2023'},
+  {valor: 'expo', label: 'Exposiciones', campo: 'Espacio / proyecto', placeholder: 'Nombre del espacio o del proyecto'},
+  {valor: 'prensa', label: 'Prensa', campo: 'Medio', placeholder: 'Nombre del medio'},
+]
+// Para precargar "Título, año" a partir del slug de la URL.
+const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, ${o.anio}`]))
+---
+
+<Base titulo="Contacto" seccion="contacto" marquesina={d.marquesina.contacto} footer="corto">
+  <section class="hero">
+    <Overprint
+      as="h1"
+      text="Contacto"
+      size="clamp(210px, 26vw, 380px)"
+      height="clamp(210px, 25.5vw, 370px)"
+      mobileSize="150px"
+      mobileHeight="150px"
+    />
+  </section>
+
+  <div class="cuerpo">
+    <dl class="datos">
+      {
+        config.email && (
+          <div class="dato">
+            <dt>Email</dt>
+            <dd>
+              <a class="grande" href={`mailto:${config.email}`}>
+                {config.email}
+              </a>
+            </dd>
+          </div>
+        )
+      }
+      {
+        config.instagram && (
+          <div class="dato">
+            <dt>Instagram</dt>
+            <dd>
+              <a class="grande cian" href={instagramUrl(config.instagram)} target="_blank" rel="noopener">
+                @{config.instagram} ↗
+              </a>
+            </dd>
+          </div>
+        )
+      }
+      {
+        taller && (
+          <div class="dato">
+            <dt>Taller</dt>
+            <dd>
+              <span class="grande">{taller}</span>
+              {config.notaTaller && <span class="nota">{config.notaTaller}</span>}
+            </dd>
+          </div>
+        )
+      }
+      {
+        config.representacion && (
+          <div class="dato">
+            <dt>Representación</dt>
+            <dd class="grande">{config.representacion}</dd>
+          </div>
+        )
+      }
+    </dl>
+
+    <div class="col-form">
+      <form class="form" data-form data-obras={JSON.stringify(obrasPorSlug)} data-motivos={JSON.stringify(motivos)}>
+        <fieldset class="motivo">
+          <legend>Motivo</legend>
+          <FilterChips
+            id="motivo"
+            etiqueta="Motivo del mensaje"
+            envolver
+            opciones={motivos.map(({valor, label}) => ({valor, label}))}
+          />
+          <input type="hidden" name="motivo" value={motivos[0].label} data-motivo />
+        </fieldset>
+
+        <div class="fila">
+          <label class="campo">
+            Nombre
+            <input class="field" type="text" name="nombre" autocomplete="name" placeholder="Tu nombre" required />
+          </label>
+          <label class="campo">
+            Email
+            <input class="field" type="email" name="email" autocomplete="email" placeholder="tu@email.com" required />
+          </label>
+        </div>
+
+        <label class="campo">
+          <span data-campo-label>{motivos[0].campo}</span>
+          <input class="field" type="text" name="referencia" placeholder={motivos[0].placeholder} data-campo />
+        </label>
+
+        <label class="campo">
+          Mensaje
+          <textarea class="field" name="mensaje" rows="6" placeholder="Escribí tu mensaje" required></textarea>
+        </label>
+
+        <div class="enviar">
+          <Button type="submit" tamano="lg" class="boton-enviar">Enviar mensaje →</Button>
+          <span class="aviso">Respondo en unos días. Tus datos no se usan para nada más.</span>
+        </div>
+      </form>
+
+      <div class="enviado" role="status" tabindex="-1" hidden data-enviado>
+        <Overprint
+          as="p"
+          text="Gracias ★"
+          size="260px"
+          height="250px"
+          offset={[14, 10]}
+          mobileSize="160px"
+          mobileHeight="155px"
+        />
+        <p class="enviado-texto">Mensaje enviado. Te respondo a la brevedad al email que dejaste.</p>
+        <div class="enviado-botones">
+          <Button variante="rosa" href="/">Volver a las obras →</Button>
+          <Button variante="secundario" data-otro>Escribir otro mensaje</Button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<script>
+  type Motivo = {valor: string; label: string; campo: string; placeholder: string}
+
+  const form = document.querySelector<HTMLFormElement>('[data-form]')!
+  const enviado = document.querySelector<HTMLElement>('[data-enviado]')!
+  const chips = document.getElementById('motivo')!
+  const motivoInput = form.querySelector<HTMLInputElement>('[data-motivo]')!
+  const campo = form.querySelector<HTMLInputElement>('[data-campo]')!
+  const campoLabel = form.querySelector<HTMLElement>('[data-campo-label]')!
+  const motivos: Motivo[] = JSON.parse(form.dataset.motivos ?? '[]')
+  const obras: Record<string, string> = JSON.parse(form.dataset.obras ?? '{}')
+
+  // El motivo cambia la etiqueta y el ejemplo del tercer campo.
+  function aplicarMotivo(valor: string) {
+    const m = motivos.find((x) => x.valor === valor)
+    if (!m) return
+    motivoInput.value = m.label
+    campoLabel.textContent = m.campo
+    campo.placeholder = m.placeholder
+  }
+  chips.addEventListener('chips:cambio', (e) => aplicarMotivo((e as CustomEvent<{valor: string}>).detail.valor))
+
+  // ?obra=<slug> → motivo "Consulta por una obra" y el título de la obra precargado.
+  const slug = new URLSearchParams(location.search).get('obra')
+  if (slug && obras[slug]) {
+    chips.querySelector<HTMLButtonElement>('.chip[data-valor="obra"]')?.click()
+    aplicarMotivo('obra')
+    campo.value = obras[slug]
+  }
+
+  // Envío: validación nativa del navegador. En el paso 7 se agrega el POST a Web3Forms.
+  form.addEventListener('submit', (e) => {
+    e.preventDefault()
+    if (!form.reportValidity()) return
+    form.hidden = true
+    enviado.hidden = false
+    enviado.focus()
+  })
+
+  enviado.querySelector('[data-otro]')?.addEventListener('click', () => {
+    form.reset()
+    chips.querySelector<HTMLButtonElement>('.chip[data-valor="obra"]')?.click()
+    aplicarMotivo('obra')
+    enviado.hidden = true
+    form.hidden = false
+    form.querySelector<HTMLInputElement>('input[name="nombre"]')?.focus()
+  })
+</script>
+
+<style>
+  .hero {
+    padding: 24px var(--gutter) 0;
+  }
+
+  .cuerpo {
+    display: flex;
+    flex-wrap: wrap;
+    border-top: 2px solid var(--text);
+  }
+
+  /* Datos de contacto */
+  .datos {
+    flex: 1 1 380px;
+    max-width: 520px;
+    padding: 40px var(--gutter);
+  }
+
+  .dato {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .dato:first-child {
+    padding-top: 0;
+  }
+
+  .dato:last-child {
+    border-bottom: 0;
+  }
+
+  dt {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .grande {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 64px;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+
+  .cian {
+    color: var(--cyan);
+  }
+
+  .nota {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* Formulario */
+  .col-form {
+    flex: 1 1 560px;
+    min-width: 0;
+    padding: 40px var(--gutter);
+    border-left: 1px solid var(--line);
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    max-width: 760px;
+  }
+
+  .form[hidden],
+  .enviado[hidden] {
+    display: none;
+  }
+
+  .motivo {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  legend {
+    margin-bottom: 12px;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pink);
+    text-transform: uppercase;
+  }
+
+  .fila {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 26px 32px;
+  }
+
+  .fila .campo {
+    flex: 1 1 260px;
+  }
+
+  .campo {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .field {
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 0;
+    border: 0;
+    border-bottom: 2px solid var(--line-strong);
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-weight: 400;
+    text-transform: none;
+  }
+
+  .field:focus {
+    outline: none;
+    border-bottom-color: var(--acid);
+  }
+
+  .field::placeholder {
+    color: var(--placeholder);
+  }
+
+  textarea.field {
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  .enviar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
+  }
+
+  .enviar :global(.boton-enviar) {
+    padding: 0 28px;
+    font-size: 14px;
+  }
+
+  .aviso {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* Enviado */
+  .enviado {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 760px;
+  }
+
+  .enviado:focus {
+    outline: none;
+  }
+
+  .enviado-texto {
+    padding-top: 18px;
+    border-top: 2px solid var(--text);
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-body);
+  }
+
+  .enviado-botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  @media (max-width: 767.98px) {
+    .hero {
+      padding-top: 16px;
+    }
+
+    .cuerpo {
+      display: block;
+      margin: 14px var(--gutter) 0;
+    }
+
+    .datos {
+      max-width: none;
+      padding: 0;
+    }
+
+    .dato,
+    .dato:first-child {
+      padding: 10px 0;
+    }
+
+    .dato:last-child {
+      border-bottom: 1px solid var(--line);
+    }
+
+    dt {
+      font-size: 10px;
+    }
+
+    .grande {
+      font-size: 44px;
+    }
+
+    .col-form {
+      padding: 24px 0 0;
+      border-left: 0;
+    }
+
+    .form {
+      gap: 20px;
+    }
+
+    legend {
+      margin-bottom: 10px;
+      font-size: 11px;
+    }
+
+    .fila {
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .fila .campo {
+      flex: none;
+    }
+
+    .campo {
+      font-size: 11px;
+    }
+
+    .field {
+      min-height: 48px;
+      padding: 10px 0;
+    }
+
+    .enviar :global(.boton-enviar) {
+      display: flex;
+      width: 100%;
+      font-size: 13px;
+    }
+
+    .enviado {
+      gap: 16px;
+      padding-top: 4px;
+    }
+
+    .enviado-texto {
+      padding-top: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .enviado-botones {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .enviado-botones :global(.btn) {
+      display: flex;
+      width: 100%;
+    }
+  }
+</style>

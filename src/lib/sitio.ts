@@ -1,15 +1,4 @@
-// Datos del sitio de prueba. En el paso 5 se reemplazan por el documento "configuracion" de Sanity
-// y los totales se calculan a partir de las obras y colecciones.
-export const sitio = {
-  nombre: 'Nombre Apellido',
-  ciudad: '[Ciudad]',
-  pais: '[País]',
-  disciplinas: 'Pintura / Papel / Collage',
-  email: '[email@dominio.com]',
-  instagram: '[usuario]',
-  totalObras: 12,
-  totalColecciones: 4,
-}
+// Navegación y helpers de enlaces del sitio.
 
 export type Seccion = 'obras' | 'colecciones' | 'acerca' | 'contacto'
 

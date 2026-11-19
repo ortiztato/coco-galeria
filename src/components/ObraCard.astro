@@ -46,7 +46,7 @@ const sizes = {
           {variante === 'coleccion' && obra.tecnica && (
             <>
               <br />
-              <span class="tecnica">{obra.tecnica}</span>
+              <span class="tecnica">{[obra.tecnica, obra.medidas].filter(Boolean).join(' · ')}</span>
             </>
           )}
         </span>
@@ -68,6 +68,11 @@ const sizes = {
 
   .obra-card:hover {
     color: var(--text);
+  }
+
+  /* Oculta por el filtro de la home */
+  .obra-card[hidden] {
+    display: none;
   }
 
   .marco {
@@ -147,7 +152,8 @@ const sizes = {
   }
 
   .lado {
-    flex: none;
+    flex: 0 1 auto;
+    max-width: 50%;
     font-size: 12px;
     font-weight: 700;
     color: var(--muted);
