@@ -3,10 +3,16 @@ import {defineConfig} from 'astro/config'
 import {loadEnv} from 'vite'
 import sanity from '@sanity/astro'
 import react from '@astrojs/react'
+import sitemap from '@astrojs/sitemap'
 
 const {PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET} = loadEnv(process.env.NODE_ENV ?? 'development', process.cwd(), '')
 
+// URL pública del sitio (canonical, Open Graph, sitemap). Netlify la define sola en la variable URL
+// (el dominio propio si hay uno configurado). Se puede forzar con SITE_URL.
+const site = process.env.SITE_URL || process.env.URL || 'http://localhost:4321'
+
 export default defineConfig({
+  site,
   output: 'static',
   integrations: [
     sanity({
@@ -20,5 +26,8 @@ export default defineConfig({
     }),
     // Sólo para el Studio: el sitio público no usa React.
     react(),
+    sitemap({
+      filter: (pagina) => !new URL(pagina).pathname.startsWith('/admin'),
+    }),
   ],
 })

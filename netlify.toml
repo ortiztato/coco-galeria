@@ -1,0 +1,27 @@
+# Configuración de Netlify. Las variables (PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET,
+# PUBLIC_WEB3FORMS_KEY) se cargan en el panel de Netlify, no acá.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+# Archivos con hash en el nombre: se pueden cachear para siempre.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# El panel no se indexa en buscadores.
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

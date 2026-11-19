@@ -26,7 +26,13 @@ const otras = d.coleccionesConObras.filter((c) => c.slug !== slug)
 const lineasMobile = coleccion.nombre.length > 9 ? partirEnDos(coleccion.nombre) : [coleccion.nombre]
 ---
 
-<Base titulo={coleccion.nombre} seccion="colecciones" marquesina={d.marquesina.coleccion(coleccion)} descripcion={coleccion.texto}>
+<Base
+  titulo={coleccion.nombre}
+  seccion="colecciones"
+  marquesina={d.marquesina.coleccion(coleccion)}
+  descripcion={coleccion.texto ?? `${coleccion.nombre}: ${obras.length} ${obras.length === 1 ? 'obra' : 'obras'} de ${contenido.config.nombre}, ${periodo(obras)}.`}
+  imagen={obras[0]?.imagen.src}
+>
   <nav class="migas" aria-label="Migas de pan">
     <a href="/colecciones" class="solo-desktop">Colecciones</a><span class="solo-desktop" aria-hidden="true"> / </span><span
       class="solo-desktop actual"

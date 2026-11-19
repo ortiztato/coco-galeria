@@ -33,3 +33,11 @@ export function partirEnDos(texto: string): string[] {
   }
   return mejor
 }
+
+/** Recorta un texto a `max` caracteres sin cortar palabras, con "…" al final si hizo falta. */
+export function resumir(texto: string, max: number): string {
+  const limpio = texto.replace(/\s+/g, ' ').trim()
+  if (limpio.length <= max) return limpio
+  const corte = limpio.slice(0, max - 1)
+  return `${corte.slice(0, corte.lastIndexOf(' ') > 0 ? corte.lastIndexOf(' ') : corte.length).replace(/[,.;:]$/, '')}…`
+}

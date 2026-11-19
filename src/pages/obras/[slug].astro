@@ -47,7 +47,13 @@ const datos = [
 const posicion = `${d.numero(obra)} / ${dosCifras(d.total)}`
 ---
 
-<Base titulo={obra.titulo} seccion="obras" marquesina={d.marquesina.obra(obra)} descripcion={obra.descripcion}>
+<Base
+  titulo={obra.titulo}
+  seccion="obras"
+  marquesina={d.marquesina.obra(obra)}
+  descripcion={obra.descripcion ?? `${obra.titulo}${obra.anio ? ` (${obra.anio})` : ''}. ${[obra.tecnica, medidas].filter(Boolean).join(', ')}${obra.tecnica || medidas ? '. ' : ''}Obra de ${contenido.config.nombre}.`}
+  imagen={obra.imagen.src}
+>
   <div class="barra">
     <nav class="migas" aria-label="Migas de pan">
       <span class="solo-desktop">

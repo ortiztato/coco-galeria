@@ -1,7 +1,8 @@
 ---
 // Contacto: a la izquierda email, Instagram, taller y representación; a la derecha el formulario.
 // El motivo cambia la etiqueta del tercer campo. Con ?obra=<slug> se precarga la obra.
-// Paso 4: el envío se simula (validación + estado "enviado"). Paso 7: se conecta a Web3Forms.
+// El envío va a Web3Forms con fetch (sin backend): validación nativa, honeypot antispam y
+// estados enviando / enviado / error. El motivo y la referencia viajan en el asunto del email.
 import Base from '../layouts/Base.astro'
 import Overprint from '../components/Overprint.astro'
 import FilterChips from '../components/FilterChips.astro'
@@ -82,7 +83,13 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
     </dl>
 
     <div class="col-form">
-      <form class="form" data-form data-obras={JSON.stringify(obrasPorSlug)} data-motivos={JSON.stringify(motivos)}>
+      <form
+        class="form"
+        data-form
+        data-obras={JSON.stringify(obrasPorSlug)}
+        data-motivos={JSON.stringify(motivos)}
+        data-sitio={config.nombre}
+      >
         <fieldset class="motivo">
           <legend>Motivo</legend>
           <FilterChips
@@ -93,6 +100,9 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
           />
           <input type="hidden" name="motivo" value={motivos[0].label} data-motivo />
         </fieldset>
+
+        <!-- Honeypot: invisible para las personas; si un bot lo marca, Web3Forms descarta el envío. -->
+        <input type="checkbox" name="botcheck" class="trampa" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
         <div class="fila">
           <label class="campo">
@@ -116,9 +126,13 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
         </label>
 
         <div class="enviar">
-          <Button type="submit" tamano="lg" class="boton-enviar">Enviar mensaje →</Button>
+          <Button type="submit" tamano="lg" class="boton-enviar" data-enviar>Enviar mensaje →</Button>
           <span class="aviso">Respondo en unos días. Tus datos no se usan para nada más.</span>
         </div>
+
+        <p class="error" role="alert" hidden data-error>
+          No se pudo enviar el mensaje. Probá de nuevo en un rato{config.email && <> o escribime a <a href={`mailto:${config.email}`}>{config.email}</a></>}.
+        </p>
       </form>
 
       <div class="enviado" role="status" tabindex="-1" hidden data-enviado>
@@ -171,13 +185,65 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
     campo.value = obras[slug]
   }
 
-  // Envío: validación nativa del navegador. En el paso 7 se agrega el POST a Web3Forms.
-  form.addEventListener('submit', (e) => {
-    e.preventDefault()
-    if (!form.reportValidity()) return
+  // Envío a Web3Forms. La access key es pública por diseño (sólo permite mandar mails a la casilla configurada).
+  const ACCESS_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY
+  const boton = form.querySelector<HTMLButtonElement>('[data-enviar]')!
+  const textoBoton = boton.textContent
+  const error = form.querySelector<HTMLElement>('[data-error]')!
+
+  function setEnviando(enviando: boolean) {
+    boton.disabled = enviando
+    boton.textContent = enviando ? 'Enviando…' : textoBoton
+    form.setAttribute('aria-busy', String(enviando))
+  }
+
+  function mostrarEnviado() {
     form.hidden = true
     enviado.hidden = false
     enviado.focus()
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    error.hidden = true
+    if (!form.reportValidity()) return
+
+    const datos = new FormData(form)
+    // Si el honeypot está marcado es un bot: se simula el éxito sin mandar nada.
+    if (datos.get('botcheck')) return mostrarEnviado()
+
+    const motivo = String(datos.get('motivo') ?? '')
+    const referencia = String(datos.get('referencia') ?? '').trim()
+    const etiquetaReferencia = campoLabel.textContent ?? 'Referencia'
+    const nombre = String(datos.get('nombre') ?? '').trim()
+
+    setEnviando(true)
+    try {
+      if (!ACCESS_KEY) throw new Error('Falta PUBLIC_WEB3FORMS_KEY')
+      const respuesta = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', Accept: 'application/json'},
+        body: JSON.stringify({
+          access_key: ACCESS_KEY,
+          subject: `${motivo}${referencia ? `: ${referencia}` : ''} — ${nombre}`,
+          from_name: `Sitio web de ${form.dataset.sitio ?? ''}`.trim(),
+          botcheck: false,
+          Nombre: nombre,
+          email: String(datos.get('email') ?? '').trim(),
+          Motivo: motivo,
+          ...(referencia ? {[etiquetaReferencia]: referencia} : {}),
+          Mensaje: String(datos.get('mensaje') ?? ''),
+        }),
+      })
+      const resultado = await respuesta.json().catch(() => ({}))
+      if (!respuesta.ok || !resultado.success) throw new Error(resultado.message || `HTTP ${respuesta.status}`)
+      mostrarEnviado()
+    } catch (err) {
+      console.error('Error al enviar el formulario:', err)
+      error.hidden = false
+    } finally {
+      setEnviando(false)
+    }
   })
 
   enviado.querySelector('[data-otro]')?.addEventListener('click', () => {
@@ -347,6 +413,30 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
   .aviso {
     font-size: 12px;
     color: var(--muted);
+  }
+
+  .trampa {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .error {
+    padding: 12px 16px;
+    border-left: 4px solid var(--pink);
+    background: var(--surface);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .error[hidden] {
+    display: none;
+  }
+
+  .error a {
+    color: var(--acid);
   }
 
   /* Enviado */

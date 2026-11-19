@@ -9,11 +9,17 @@ import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
 import {type Seccion} from '../lib/sitio'
 import {getSitio} from '../lib/contenido'
+import {resumir} from '../lib/texto'
 
 interface Props {
   /** Título de la página (sin el nombre del artista). */
   titulo?: string
+  /** Meta descripción. Si no se pasa, se usa la de "Datos del sitio". */
   descripcion?: string
+  /** Imagen para compartir (Open Graph). Si no se pasa, la de "Datos del sitio" o la primera obra. */
+  imagen?: string
+  /** Para que los buscadores no la indexen (ej. 404). */
+  noindex?: boolean
   /** Sección activa en la navegación. */
   seccion?: Seccion
   /** Frases de la marquesina de esta página. */
@@ -21,9 +27,20 @@ interface Props {
   footer?: 'completo' | 'corto'
 }
 
-const {titulo, descripcion, seccion, marquesina, footer = 'completo'} = Astro.props
-const {config} = (await getSitio()).contenido
+const {titulo, descripcion, imagen, noindex = false, seccion, marquesina, footer = 'completo'} = Astro.props
+const {contenido} = await getSitio()
+const {config, obras} = contenido
 const tituloCompleto = titulo ? `${titulo} — ${config.nombre}` : config.nombre
+
+const descripcionPorDefecto =
+  config.seoDescripcion ??
+  [`${config.nombre}, artista visual${config.ciudad ? ` de ${config.ciudad}` : ''}.`, config.disciplinas].filter(Boolean).join(' ')
+const descripcionFinal = resumir(descripcion ?? descripcionPorDefecto, 160)
+
+const sitio = Astro.site ?? new URL('http://localhost:4321')
+const canonical = new URL(Astro.url.pathname, sitio).href
+const imagenRelativa = imagen ?? config.imagenCompartir?.src ?? obras[0]?.imagen.src
+const imagenOg = imagenRelativa ? new URL(imagenRelativa, sitio).href : undefined
 ---
 
 <!doctype html>
@@ -32,8 +49,24 @@ const tituloCompleto = titulo ? `${titulo} — ${config.nombre}` : config.nombre
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{tituloCompleto}</title>
-    {descripcion && <meta name="description" content={descripcion} />}
+    <meta name="description" content={descripcionFinal} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
     <meta name="theme-color" content="#0A0A0A" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Al compartir en redes -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:site_name" content={config.nombre} />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descripcionFinal} />
+    <meta property="og:url" content={canonical} />
+    {imagenOg && <meta property="og:image" content={imagenOg} />}
+    <meta name="twitter:card" content={imagenOg ? 'summary_large_image' : 'summary'} />
   </head>
   <body class="grain">
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
