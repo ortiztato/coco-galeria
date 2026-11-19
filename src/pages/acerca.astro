@@ -25,29 +25,23 @@ const cv = acerca.cv.filter((s) => s.entradas.length > 0)
   </section>
 
   <div class="cuerpo">
-    <div class="col-foto">
-      {
-        acerca.foto ? (
+    {
+      acerca.foto && (
+        <div class="col-foto">
           <figure class="foto">
             <ObraImagen imagen={acerca.foto} sizes="(max-width: 767.98px) 90vw, 560px" eager class="foto-img" />
           </figure>
-        ) : (
-          <div class="foto foto-vacia" aria-hidden="true">
-            [Foto del artista en el taller]
-          </div>
-        )
-      }
-      {
-        (acerca.creditoFoto || acerca.lugarFoto) && (
-          <p class="credito">
-            <span>{acerca.creditoFoto && `Foto: ${acerca.creditoFoto}`}</span>
-            <span>{acerca.lugarFoto}</span>
-          </p>
-        )
-      }
-    </div>
+          {(acerca.creditoFoto || acerca.lugarFoto) && (
+            <p class="credito">
+              <span>{acerca.creditoFoto && `Foto: ${acerca.creditoFoto}`}</span>
+              <span>{acerca.lugarFoto}</span>
+            </p>
+          )}
+        </div>
+      )
+    }
 
-    <div class="col-texto">
+    <div class:list={['col-texto', {'sin-foto': !acerca.foto}]}>
       {
         (acerca.bioDestacada || acerca.bio) && (
           <>
@@ -132,19 +126,6 @@ const cv = acerca.cv.filter((s) => s.entradas.length > 0)
     object-fit: cover;
   }
 
-  .foto-vacia {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    aspect-ratio: 4 / 5;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--muted);
-    text-transform: uppercase;
-  }
-
   .credito {
     display: flex;
     justify-content: space-between;
@@ -161,6 +142,10 @@ const cv = acerca.cv.filter((s) => s.entradas.length > 0)
     min-width: 0;
     padding: 40px var(--gutter);
     border-left: 1px solid var(--line);
+  }
+
+  .col-texto.sin-foto {
+    border-left: 0;
   }
 
   .rotulo {
@@ -292,12 +277,6 @@ const cv = acerca.cv.filter((s) => s.entradas.length > 0)
 
     .foto {
       box-shadow: 8px 8px 0 var(--cyan), -8px -8px 0 var(--pink);
-    }
-
-    .foto-vacia {
-      aspect-ratio: auto;
-      height: 400px;
-      font-size: 11px;
     }
 
     .credito {

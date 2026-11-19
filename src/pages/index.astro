@@ -52,9 +52,15 @@ const lugar = ['Artista visual', config.ciudad].filter(Boolean).join(' · ')
     )
   }
 
-  <ObraGrid id="obras">
-    {obras.map((o, i) => <ObraCard obra={d.resumen(o)} eager={i === 0} />)}
-  </ObraGrid>
+  {
+    obras.length > 0 ? (
+      <ObraGrid id="obras">
+        {obras.map((o, i) => <ObraCard obra={d.resumen(o)} eager={i === 0} />)}
+      </ObraGrid>
+    ) : (
+      <p class="vacio">Todavía no hay obras publicadas.</p>
+    )
+  }
 </Base>
 
 <script>
@@ -107,6 +113,13 @@ const lugar = ['Artista visual', config.ciudad].filter(Boolean).join(' · ')
     padding: 20px var(--gutter);
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
+  }
+
+  .vacio {
+    padding: 48px var(--gutter);
+    border-top: 1px solid var(--line);
+    font-size: 15px;
+    color: var(--muted);
   }
 
   .ver-colecciones {

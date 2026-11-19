@@ -39,8 +39,8 @@ const etiquetaVista = (v: Vista) => {
 const vistas = [{etiqueta: 'Obra completa', imagen: obra.imagen, registro: true}, ...obra.vistas.map((v) => ({etiqueta: etiquetaVista(v), imagen: v.imagen, registro: false}))]
 
 const datos = [
-  {etiqueta: 'Año', valor: String(obra.anio)},
-  {etiqueta: 'Técnica', valor: obra.tecnica},
+  ...(obra.anio ? [{etiqueta: 'Año', valor: String(obra.anio)}] : []),
+  ...(obra.tecnica ? [{etiqueta: 'Técnica', valor: obra.tecnica}] : []),
   ...(medidas ? [{etiqueta: 'Medidas', valor: medidas}] : []),
   ...(coleccion ? [{etiqueta: 'Colección', valor: coleccion.nombre, href: hrefColeccion(coleccion.slug), color: 'cian' as const}] : []),
 ]
@@ -96,7 +96,7 @@ const posicion = `${d.numero(obra)} / ${dosCifras(d.total)}`
               {vistas.map((v, i) => (
                 <button type="button" class="boton-vista" aria-pressed={i === 0 ? 'true' : 'false'} aria-label={v.etiqueta} data-ir-a={i}>
                   <span class="mini">
-                    <img src={v.imagen.src} alt="" width={v.imagen.width} height={v.imagen.height} loading="lazy" decoding="async" />
+                    <img src={v.imagen.miniatura ?? v.imagen.src} alt="" width="52" height="52" loading="lazy" decoding="async" />
                   </span>
                   <span class="etiqueta-vista" aria-hidden="true">{v.etiqueta}</span>
                 </button>

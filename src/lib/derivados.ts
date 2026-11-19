@@ -9,7 +9,8 @@ export const hrefColeccion = (slug: string) => `/colecciones/${slug}`
 /** "2020—2023", o "2021" si todas son del mismo año. */
 export function periodo(obras: Obra[]): string {
   if (obras.length === 0) return ''
-  const anios = obras.map((o) => o.anio)
+  const anios = obras.map((o) => o.anio).filter((a) => a > 0)
+  if (anios.length === 0) return ''
   const min = Math.min(...anios)
   const max = Math.max(...anios)
   return min === max ? String(min) : `${min}—${max}`
@@ -74,7 +75,7 @@ export function crearDerivados(c: Contenido) {
       return [`Colección ${numeroColeccion(col)}`, col.nombre, conteo(lista.length, 'obra', 'obras'), periodo(lista)].filter(Boolean)
     },
     obra: (obra: Obra) =>
-      [`Obra ${numero(obra)} / ${dosCifras(total)}`, obra.titulo, String(obra.anio), obra.tecnica, medidasTexto(obra)].filter(
+      [`Obra ${numero(obra)} / ${dosCifras(total)}`, obra.titulo, obra.anio ? String(obra.anio) : '', obra.tecnica, medidasTexto(obra)].filter(
         (t): t is string => Boolean(t),
       ),
     acerca: [config.nombre, 'Artista visual', config.ciudad].filter((t): t is string => Boolean(t)),

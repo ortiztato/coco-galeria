@@ -8,6 +8,8 @@ export interface Imagen {
   width: number
   height: number
   alt: string
+  /** Miniatura cuadrada recortada (sólo para los botones de vistas). */
+  miniatura?: string
 }
 
 // ── Contenido (lo que se carga en el panel) ──────────────────────────────
