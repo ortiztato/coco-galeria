@@ -5,6 +5,7 @@ import path from 'node:path'
 import type {ImageMetadata} from 'astro'
 import type {Acerca, Coleccion, Configuracion, Contenido, Imagen, Obra, Vista} from './tipos'
 import {slugify} from './texto'
+import {parseCsv} from './csv'
 
 const archivos = import.meta.glob<{default: ImageMetadata}>('/design/assets/obras/*.jpg', {eager: true})
 
@@ -16,40 +17,6 @@ export function imagenPrueba(nombre: string, alt = ''): Imagen {
 }
 
 const existe = (nombre: string) => `/design/assets/obras/${nombre}` in archivos
-
-/** Parser de CSV mínimo: comas, comillas dobles y saltos de línea dentro de comillas. */
-export function parseCsv(texto: string): Record<string, string>[] {
-  const filas: string[][] = []
-  let fila: string[] = []
-  let campo = ''
-  let comillas = false
-  for (let i = 0; i < texto.length; i++) {
-    const c = texto[i]
-    if (comillas) {
-      if (c === '"' && texto[i + 1] === '"') {
-        campo += '"'
-        i++
-      } else if (c === '"') comillas = false
-      else campo += c
-    } else if (c === '"') comillas = true
-    else if (c === ',') {
-      fila.push(campo)
-      campo = ''
-    } else if (c === '\n' || c === '\r') {
-      if (c === '\r' && texto[i + 1] === '\n') i++
-      fila.push(campo)
-      filas.push(fila)
-      fila = []
-      campo = ''
-    } else campo += c
-  }
-  if (campo || fila.length) {
-    fila.push(campo)
-    filas.push(fila)
-  }
-  const [encabezado, ...datos] = filas.filter((f) => f.some((v) => v.trim() !== ''))
-  return datos.map((f) => Object.fromEntries(encabezado.map((h, i) => [h.trim(), (f[i] ?? '').trim()])))
-}
 
 /**
  * Vistas adicionales por convención de nombre: para "w01.jpg" se buscan
