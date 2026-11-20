@@ -1,6 +1,6 @@
 ---
-// Imagen de una obra dentro de un marco: centrada y sin recorte (max-width/max-height: 100%).
-// width/height reales evitan saltos de layout.
+// Imagen de una obra: nunca se recorta. width/height reales evitan saltos de layout y,
+// mientras carga, se ve la versión diminuta (LQIP) que da Sanity.
 import type {Imagen} from '../lib/tipos'
 
 interface Props {
@@ -15,6 +15,7 @@ interface Props {
 }
 
 const {imagen, sizes, eager = false, decorativa = false, class: className} = Astro.props
+const fondo = imagen.lqip ? `background-image:url("${imagen.lqip}")` : imagen.color ? `background-color:${imagen.color}` : undefined
 ---
 
 <img
@@ -28,6 +29,7 @@ const {imagen, sizes, eager = false, decorativa = false, class: className} = Ast
   loading={eager ? 'eager' : 'lazy'}
   fetchpriority={eager ? 'high' : undefined}
   decoding="async"
+  style={fondo}
 />
 
 <style>
@@ -37,5 +39,7 @@ const {imagen, sizes, eager = false, decorativa = false, class: className} = Ast
     height: auto;
     max-width: 100%;
     max-height: 100%;
+    background-size: cover;
+    background-position: center;
   }
 </style>

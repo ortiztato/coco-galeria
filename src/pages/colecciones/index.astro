@@ -1,42 +1,31 @@
 ---
-// Listado de colecciones: hero + una fila por colección con miniaturas de todas sus obras.
+// Listado de colecciones: una fila por serie con todas sus obras en miniatura.
 import Base from '../../layouts/Base.astro'
-import Overprint from '../../components/Overprint.astro'
 import ListRow from '../../components/ListRow.astro'
 import {getSitio} from '../../lib/contenido'
-import {hrefColeccion, periodo} from '../../lib/derivados'
-import {colorFila} from '../../lib/tipos'
+import {conteo, hrefColeccion, periodo} from '../../lib/derivados'
 
 const {d} = await getSitio()
 ---
 
-<Base titulo="Colecciones" seccion="colecciones" marquesina={d.marquesina.colecciones}>
-  <section class="hero">
-    <Overprint
-      as="h1"
-      class="titulo"
-      text="Colecciones"
-      size="clamp(190px, 21vw, 300px)"
-      height="clamp(190px, 20vw, 290px)"
-      offset={[14, 10]}
-      mobileSize="150px"
-      mobileHeight="150px"
-    />
-    <p class="intro">La obra agrupada en series. Cada colección reúne piezas que comparten una búsqueda, un material o un período.</p>
+<Base titulo="Colecciones" seccion="colecciones">
+  <section class="cabecera contenedor">
+    <p class="etiqueta punto">{conteo(d.coleccionesConObras.length, 'serie', 'series')}</p>
+    <h1 class="titulo-pagina">Colecciones</h1>
+    <p class="parrafo intro">La obra agrupada en series. Cada colección reúne piezas que comparten una búsqueda, un material o un período.</p>
   </section>
 
-  <div class="lista">
+  <div class="lista contenedor">
     {d.coleccionesConObras.length === 0 && <p class="vacio">Todavía no hay colecciones publicadas.</p>}
     {
-      d.coleccionesConObras.map((c, i) => {
+      d.coleccionesConObras.map((c) => {
         const obras = d.obrasDe(c.slug)
         return (
           <ListRow
             href={hrefColeccion(c.slug)}
             nombre={c.nombre}
             numero={d.numeroColeccion(c)}
-            meta={`${obras.length} ${obras.length === 1 ? 'obra' : 'obras'} · ${periodo(obras)}`}
-            color={colorFila(i)}
+            meta={[conteo(obras.length, 'obra', 'obras'), periodo(obras)].filter(Boolean).join(' — ')}
             miniaturas={obras.map((o) => o.imagen)}
           />
         )
@@ -46,46 +35,26 @@ const {d} = await getSitio()
 </Base>
 
 <style>
-  .hero {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 16px 40px;
-    padding: 24px var(--gutter) 28px;
+  .cabecera {
+    padding-top: clamp(32px, 5vw, 72px);
+    padding-bottom: clamp(40px, 5vw, 72px);
   }
 
-  .hero :global(.titulo) {
-    width: min(900px, 100%);
+  .cabecera .titulo-pagina {
+    margin-top: 18px;
   }
 
   .intro {
-    max-width: 380px;
-    font-size: 13px;
-    line-height: 1.7;
-    color: var(--muted);
+    max-width: 52ch;
+    margin-top: 28px;
   }
 
-  .lista {
-    border-top: 2px solid var(--text);
+  .lista > :global(:first-child) {
+    border-top: 1px solid var(--linea);
   }
 
   .vacio {
-    padding: 48px var(--gutter);
-    font-size: 15px;
-    color: var(--muted);
-  }
-
-  @media (max-width: 767.98px) {
-    .hero {
-      display: block;
-      padding: 16px var(--gutter) 18px;
-    }
-
-    .intro {
-      padding-top: 12px;
-      font-size: 12px;
-      line-height: 1.6;
-    }
+    padding: 32px 0;
+    color: var(--tenue);
   }
 </style>

@@ -1,227 +1,151 @@
 ---
-// Tarjeta de obra: marco de alto fijo (#121212) con la imagen centrada y sin recorte, y un pie con datos.
-// Variantes (valores de los prototipos):
-//   home       → marco 360 px, pie con número + año, título 62 px, colección en cian
-//   coleccion  → marco 520 px, título 72 px y a la derecha año + técnica
-//   mas        → marco 280 px, título 52 px y año ("Más de esta colección")
+// Obra dentro de una grilla: la imagen entera, con su proporción real y marcas de corte en las
+// esquinas; al pasar el mouse, el lápiz rojo la recuadra. Abajo, su ficha a máquina.
+// El ancho de cada obra en la fila sale de su proporción (--r), ver ObraGrid.
 import ObraImagen from './ObraImagen.astro'
+import Marca from './Marca.astro'
 import type {ObraResumen} from '../lib/tipos'
 
 interface Props {
   obra: ObraResumen
+  /** "mas": versión corta para "Más de esta colección" (sin técnica). */
   variante?: 'home' | 'coleccion' | 'mas'
   eager?: boolean
 }
 
 const {obra, variante = 'home', eager = false} = Astro.props
+const {imagen} = obra
+const proporcion = imagen.width > 0 && imagen.height > 0 ? imagen.width / imagen.height : 1
 
 const sizes = {
-  home: '(max-width: 767.98px) 50vw, (max-width: 1400px) 33vw, 25vw',
-  coleccion: '(max-width: 767.98px) 100vw, (max-width: 1400px) 50vw, 33vw',
-  mas: '(max-width: 767.98px) 50vw, 25vw',
+  home: '(max-width: 767.98px) 70vw, 34vw',
+  coleccion: '(max-width: 767.98px) 90vw, 45vw',
+  mas: '(max-width: 767.98px) 60vw, 25vw',
 }[variante]
 ---
 
-<a class:list={['obra-card', `obra-card--${variante}`]} href={obra.href} data-coleccion={obra.coleccion?.slug}>
-  <span class="marco">
-    <ObraImagen imagen={obra.imagen} sizes={sizes} eager={eager} />
+<a class:list={['obra-card', `obra-card--${variante}`]} href={obra.href} data-coleccion={obra.coleccion?.slug} style={`--r:${proporcion.toFixed(4)}`}>
+  <span class="lienzo corte con-marca">
+    <ObraImagen imagen={imagen} sizes={sizes} eager={eager} class="img" />
+    <Marca tipo="recuadro" modo="hover" />
   </span>
-
-  {
-    variante === 'home' ? (
-      <span class="pie">
-        <span class="meta">
-          <span>{obra.numero}</span>
-          <span class="sep" aria-hidden="true">·</span>
-          <span>{obra.anio}</span>
+  <span class="ficha">
+    <span class="linea-1">
+      {obra.numero && <span class="num numero">{obra.numero}</span>}
+      {imagen.color && <span class="muestra" style={`background:${imagen.color}`} />}
+      {obra.anio ? <span class="num anio">{obra.anio}</span> : null}
+    </span>
+    <span class="titulo">{obra.titulo}</span>
+    {
+      variante !== 'mas' && (obra.tecnica || obra.medidas) && (
+        <span class="detalle">
+          {obra.tecnica}
+          {obra.tecnica && obra.medidas && ' — '}
+          {obra.medidas && <span class="medidas num">{obra.medidas}</span>}
         </span>
-        <span class="titulo">{obra.titulo}</span>
-        {obra.coleccion && <span class="col">{obra.coleccion.nombre}</span>}
-      </span>
-    ) : (
-      <span class="pie pie-lado">
-        <span class="titulo">{obra.titulo}</span>
-        <span class="lado">
-          {obra.anio}
-          {variante === 'coleccion' && obra.tecnica && (
-            <>
-              <br />
-              <span class="tecnica">{[obra.tecnica, obra.medidas].filter(Boolean).join(' · ')}</span>
-            </>
-          )}
-        </span>
-      </span>
-    )
-  }
+      )
+    }
+  </span>
 </a>
 
 <style>
   .obra-card {
+    /* Ancho base = proporción × alto de fila; crece en la misma proporción para llenar la fila
+       (así todas las obras de una fila quedan del mismo alto), hasta un tope (--crecer). */
+    flex: var(--r) 1 calc(var(--r) * var(--alto-fila));
+    max-width: calc(var(--r) * var(--alto-fila) * var(--crecer, 1.6));
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    background: var(--bg);
-    border-right: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    color: var(--text);
+    color: var(--blanco);
     text-decoration: none;
   }
 
-  .obra-card:hover {
-    color: var(--text);
-  }
-
-  /* Oculta por el filtro de la home */
   .obra-card[hidden] {
     display: none;
   }
 
-  .marco {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 360px;
-    padding: 36px;
-    background: var(--frame);
+  .lienzo {
+    display: block;
   }
 
-  .obra-card--coleccion .marco {
-    height: 520px;
-    padding: 48px;
+  .lienzo :global(.img) {
+    width: 100%;
+    max-height: none;
   }
 
-  .obra-card--mas .marco {
-    height: 280px;
-    padding: 32px;
-  }
-
-  .pie {
+  .ficha {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    padding: 14px 18px 18px;
+    gap: 3px;
+    padding-top: 18px;
   }
 
-  .meta {
+  .linea-1 {
     display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--muted);
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--tenue);
   }
 
-  .meta .sep {
-    display: none;
+  .numero {
+    color: var(--blanco);
   }
 
   .titulo {
-    font-family: var(--font-display);
-    font-size: 62px;
-    line-height: 0.95;
-    text-transform: uppercase;
-    transition: color 0.15s;
-  }
-
-  .col {
-    font-size: 12px;
+    font-family: var(--grotesca);
+    font-stretch: 118%;
     font-weight: 700;
-    color: var(--cyan);
+    font-size: 14px;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
     text-transform: uppercase;
   }
 
-  .pie-lado {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 16px;
+  .detalle {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--tenue);
   }
 
-  .obra-card--coleccion .pie-lado {
-    padding: 14px 20px 18px;
-  }
-
-  .obra-card--mas .pie-lado {
-    padding: 12px 18px 16px;
+  .medidas {
+    white-space: nowrap;
   }
 
   .obra-card--coleccion .titulo {
-    font-size: 72px;
+    font-size: 16px;
   }
 
-  .obra-card--mas .titulo {
-    font-size: 52px;
-  }
-
-  .lado {
-    flex: 0 1 auto;
-    max-width: 50%;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--muted);
-    text-align: right;
-    text-transform: uppercase;
+  .obra-card:focus-visible .lienzo > :global(.marca--hover) {
+    clip-path: inset(0 0 0 0);
   }
 
   @media (hover: hover) {
+    .obra-card:hover .lienzo > :global(.marca--hover) {
+      clip-path: inset(0 0 0 0);
+    }
+
     .obra-card:hover .titulo {
-      color: var(--pink);
+      text-decoration: underline;
+      text-decoration-color: var(--rojo);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 0.3em;
     }
   }
 
   @media (max-width: 767.98px) {
-    /* Home y "más de": 2 columnas */
-    .obra-card--home .marco,
-    .obra-card--mas .marco {
-      height: 180px;
-      padding: 18px;
+    .ficha {
+      padding-top: 14px;
     }
 
-    .obra-card--home .pie {
-      padding: 8px 10px 12px;
+    .titulo {
+      font-size: 12.5px;
     }
 
-    .obra-card--home .meta {
-      justify-content: flex-start;
-      gap: 4px;
-      font-size: 10px;
-    }
-
-    .obra-card--home .meta .sep {
-      display: inline;
-    }
-
-    .obra-card--home .titulo,
-    .obra-card--mas .titulo {
-      font-size: 36px;
-    }
-
-    .obra-card--home .col {
-      display: none;
-    }
-
-    .obra-card--mas .pie-lado {
-      padding: 8px 10px 12px;
-    }
-
-    /* Colección: 1 columna */
-    .obra-card--coleccion .marco {
-      height: 300px;
-      padding: 28px;
-    }
-
-    .obra-card--coleccion .pie-lado {
-      padding: 8px 16px 12px;
-    }
-
-    .obra-card--coleccion .titulo {
-      font-size: 46px;
-    }
-
-    .lado {
+    .detalle {
       font-size: 11px;
-    }
-
-    .tecnica {
-      display: none;
     }
   }
 </style>

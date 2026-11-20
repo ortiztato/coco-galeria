@@ -1,16 +1,14 @@
 ---
-// Una colección: migas, hero con el nombre, cantidad de obras y período, texto de la serie,
-// grilla de sus obras y "Otras colecciones".
+// Una colección: migas, nombre grande, cantidad de obras, período y texto de la serie,
+// sus obras a tamaño grande y "Otras colecciones".
 import type {GetStaticPaths} from 'astro'
 import Base from '../../layouts/Base.astro'
-import Overprint from '../../components/Overprint.astro'
 import ObraGrid from '../../components/ObraGrid.astro'
 import ObraCard from '../../components/ObraCard.astro'
 import ListRow from '../../components/ListRow.astro'
 import {getSitio} from '../../lib/contenido'
-import {hrefColeccion, periodo} from '../../lib/derivados'
-import {dosCifras, partirEnDos} from '../../lib/texto'
-import {colorFila} from '../../lib/tipos'
+import {conteo, hrefColeccion, periodo} from '../../lib/derivados'
+import {dosCifras} from '../../lib/texto'
 
 export const getStaticPaths = (async () => {
   const {d} = await getSitio()
@@ -22,71 +20,61 @@ const {contenido, d} = await getSitio()
 const coleccion = contenido.colecciones.find((c) => c.slug === slug)!
 const obras = d.obrasDe(slug)
 const otras = d.coleccionesConObras.filter((c) => c.slug !== slug)
-// En mobile el nombre se parte en dos líneas si es largo (ej. "CAMPOS / DE COLOR").
-const lineasMobile = coleccion.nombre.length > 9 ? partirEnDos(coleccion.nombre) : [coleccion.nombre]
+const per = periodo(obras)
 ---
 
 <Base
   titulo={coleccion.nombre}
   seccion="colecciones"
-  marquesina={d.marquesina.coleccion(coleccion)}
-  descripcion={coleccion.texto ?? `${coleccion.nombre}: ${obras.length} ${obras.length === 1 ? 'obra' : 'obras'} de ${contenido.config.nombre}, ${periodo(obras)}.`}
+  descripcion={coleccion.texto ?? `${coleccion.nombre}: ${conteo(obras.length, 'obra', 'obras')} de ${contenido.config.nombre}${per ? `, ${per}` : ''}.`}
   imagen={obras[0]?.imagen.src}
 >
-  <nav class="migas" aria-label="Migas de pan">
-    <a href="/colecciones" class="solo-desktop">Colecciones</a><span class="solo-desktop" aria-hidden="true"> / </span><span
-      class="solo-desktop actual"
-      aria-current="page">{coleccion.nombre}</span
-    >
-    <a href="/colecciones" class="solo-mobile">← Colecciones</a>
-  </nav>
+  <div class="contenedor">
+    <nav class="migas" aria-label="Migas de pan">
+      <a href="/colecciones">Colecciones</a>
+      <span aria-hidden="true"> / </span>
+      <span aria-current="page">{coleccion.nombre}</span>
+    </nav>
+  </div>
 
-  <section class="hero">
-    <Overprint
-      as="h1"
-      text={coleccion.nombre}
-      mobileText={lineasMobile}
-      size="clamp(210px, 26vw, 380px)"
-      height="clamp(210px, 25.5vw, 370px)"
-      mobileSize={lineasMobile.length > 1 ? '112px' : '150px'}
-      mobileHeight={lineasMobile.length > 1 ? '220px' : '150px'}
-    />
+  <section class="cabecera contenedor">
+    <p class="etiqueta punto">Colección {d.numeroColeccion(coleccion)}</p>
+    <h1 class="titulo-pagina">{coleccion.nombre}</h1>
     <div class="info">
       <dl class="stats">
         <div>
           <dt>Obras</dt>
-          <dd>{dosCifras(obras.length)}</dd>
+          <dd class="num">{dosCifras(obras.length)}</dd>
         </div>
-        <div>
-          <dt>Período</dt>
-          <dd>{periodo(obras)}</dd>
-        </div>
+        {
+          per && (
+            <div>
+              <dt>Período</dt>
+              <dd class="num">{per}</dd>
+            </div>
+          )
+        }
       </dl>
-      {coleccion.texto && <p class="texto">{coleccion.texto}</p>}
+      {coleccion.texto && <p class="parrafo texto">{coleccion.texto}</p>}
     </div>
   </section>
 
-  <ObraGrid variante="coleccion" bordeSuperior>
-    {obras.map((o, i) => <ObraCard obra={d.resumen(o)} variante="coleccion" eager={i === 0} />)}
-  </ObraGrid>
+  <section class="contenedor" aria-label={`Obras de ${coleccion.nombre}`}>
+    <ObraGrid variante="coleccion">
+      {obras.map((o, i) => <ObraCard obra={d.resumen(o)} variante="coleccion" eager={i === 0} />)}
+    </ObraGrid>
+  </section>
 
   {
     otras.length > 0 && (
-      <section class="otras">
-        <h2 class="otras-titulo">Otras colecciones</h2>
-        <div>
-          {otras.map((c, i) => {
-            const n = d.obrasDe(c.slug).length
-            return (
-              <ListRow
-                variante="compacta"
-                href={hrefColeccion(c.slug)}
-                nombre={c.nombre}
-                meta={`${dosCifras(n)} ${n === 1 ? 'obra' : 'obras'}`}
-                color={colorFila(i) === 'rosa' ? 'texto' : colorFila(i)}
-              />
-            )
-          })}
+      <section class="otras contenedor" aria-labelledby="otras-titulo">
+        <h2 id="otras-titulo" class="etiqueta">
+          Otras colecciones
+        </h2>
+        <div class="otras-lista">
+          {otras.map((c) => (
+            <ListRow variante="compacta" href={hrefColeccion(c.slug)} nombre={c.nombre} meta={conteo(d.obrasDe(c.slug).length, 'obra', 'obras')} />
+          ))}
         </div>
       </section>
     )
@@ -95,119 +83,74 @@ const lineasMobile = coleccion.nombre.length > 9 ? partirEnDos(coleccion.nombre)
 
 <style>
   .migas {
-    padding: 16px var(--gutter) 0;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--muted);
-    text-transform: uppercase;
+    padding-top: 10px;
   }
 
-  .migas .actual {
-    color: var(--text);
+  .cabecera {
+    padding-top: clamp(32px, 5vw, 64px);
+    padding-bottom: clamp(56px, 7vw, 104px);
   }
 
-  .solo-mobile {
-    display: none;
-  }
-
-  .hero {
-    padding: 14px var(--gutter) 0;
+  .cabecera .titulo-pagina {
+    margin-top: 18px;
   }
 
   .info {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    gap: 24px 48px;
-    padding: 22px 0 32px;
-    border-top: 2px solid var(--text);
+    gap: 28px 64px;
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--linea);
   }
 
   .stats {
     display: flex;
-    gap: 40px;
-    font-size: 13px;
-    font-weight: 700;
+    gap: 48px;
   }
 
   .stats dt {
-    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
+    color: var(--tenue);
   }
 
   .stats dd {
-    margin-top: 4px;
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: 72px;
-    line-height: 0.9;
+    margin-top: 6px;
+    font-family: var(--grotesca);
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: 30px;
+    line-height: 1;
   }
 
   .texto {
-    max-width: 560px;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--text-body);
+    max-width: 56ch;
   }
 
   .otras {
-    padding: 36px var(--gutter) 24px;
+    margin-top: clamp(112px, 12vw, 176px);
   }
 
-  .otras-titulo {
-    margin-bottom: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--pink);
-    text-transform: uppercase;
+  .otras-lista {
+    margin-top: 12px;
+    border-top: 1px solid var(--linea);
   }
 
   @media (max-width: 767.98px) {
-    .migas {
-      padding-top: 12px;
-      font-size: 11px;
-    }
-
-    .solo-desktop {
-      display: none;
-    }
-
-    .solo-mobile {
-      display: inline;
-      text-decoration: none;
-    }
-
-    .hero {
-      padding-top: 10px;
-    }
-
     .info {
       display: block;
-      padding: 10px 0 18px;
-    }
-
-    .stats {
-      gap: 28px;
-    }
-
-    .stats dt {
-      font-size: 10px;
-    }
-
-    .stats dd {
-      margin-top: 0;
-      font-size: 48px;
-      line-height: 0.95;
+      margin-top: 28px;
     }
 
     .texto {
-      padding-top: 10px;
-      font-size: 12px;
-      line-height: 1.6;
+      margin-top: 20px;
     }
 
-    .otras {
-      padding: 28px var(--gutter) 16px;
+    .stats dd {
+      font-size: 24px;
     }
   }
 </style>

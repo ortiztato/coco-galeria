@@ -16,8 +16,9 @@ export const configuracion = defineType({
     defineField({name: 'notaTaller', title: 'Nota sobre el taller', description: 'Ej.: Visitas al taller con cita previa.', type: 'string'}),
     defineField({
       name: 'marquesina',
-      title: 'Frases de la marquesina (home)',
-      description: 'Se muestran en la barra verde, separadas por ★.',
+      title: 'Avisos (barra superior)',
+      description:
+        'Opcional. Frases cortas que aparecen arriba de todo, en todas las páginas. Ej.: "Muestra en Galería X hasta el 30/11". Si lo dejás vacío, no se muestra.',
       type: 'array',
       of: [defineArrayMember({type: 'string'})],
     }),

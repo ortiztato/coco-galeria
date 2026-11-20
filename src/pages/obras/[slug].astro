@@ -1,18 +1,19 @@
 ---
-// Página de obra: migas + anterior/siguiente; a la izquierda el marco grande con la vista activa y los
-// botones de vistas; a la derecha (sticky) número, colección, título, datos, descripción y consulta.
-// Abajo, "Más de [colección]". En mobile todo va en una columna y anterior/siguiente pasa al final.
+// Página de obra: a la izquierda la obra sobre un panel, con marcas de corte y sus vistas numeradas
+// como cuadros de una tira de película (01A, 01B…); la vista elegida queda recuadrada en rojo.
+// A la derecha (sticky) la ficha: número, colección, título, datos, descripción y consulta.
+// Abajo, anterior / siguiente y "Más de [colección]".
 import type {GetStaticPaths} from 'astro'
 import Base from '../../layouts/Base.astro'
-import Overprint from '../../components/Overprint.astro'
 import DataList from '../../components/DataList.astro'
 import Button from '../../components/Button.astro'
 import ObraGrid from '../../components/ObraGrid.astro'
 import ObraCard from '../../components/ObraCard.astro'
 import ObraImagen from '../../components/ObraImagen.astro'
+import Marca from '../../components/Marca.astro'
 import {getSitio} from '../../lib/contenido'
 import {hrefColeccion, hrefObra, medidasTexto} from '../../lib/derivados'
-import {dosCifras, partirEnDos} from '../../lib/texto'
+import {dosCifras} from '../../lib/texto'
 import type {Vista} from '../../lib/tipos'
 
 export const getStaticPaths = (async () => {
@@ -27,8 +28,9 @@ const coleccion = d.coleccionDe(obra)
 const {anterior, siguiente} = d.vecinas(obra)
 const masDe = coleccion ? d.obrasDe(coleccion.slug).filter((o) => o.slug !== obra.slug) : []
 const medidas = medidasTexto(obra)
+const numero = d.numero(obra)
 
-// Vistas: la obra completa primero, después detalles / en sala / otras.
+// Vistas: la obra completa primero, después detalles / en sala / otras. Código de cuadro: 01A, 01B…
 let nDetalle = 0
 let nOtra = 0
 const etiquetaVista = (v: Vista) => {
@@ -36,118 +38,103 @@ const etiquetaVista = (v: Vista) => {
   if (v.tipo === 'sala') return 'En sala'
   return `Otra vista ${++nOtra}`
 }
-const vistas = [{etiqueta: 'Obra completa', imagen: obra.imagen, registro: true}, ...obra.vistas.map((v) => ({etiqueta: etiquetaVista(v), imagen: v.imagen, registro: false}))]
+const vistas = [
+  {etiqueta: 'Obra completa', imagen: obra.imagen},
+  ...obra.vistas.map((v) => ({etiqueta: etiquetaVista(v), imagen: v.imagen})),
+].map((v, i) => ({...v, codigo: `${numero}${String.fromCharCode(65 + (i % 26))}`}))
 
 const datos = [
   ...(obra.anio ? [{etiqueta: 'Año', valor: String(obra.anio)}] : []),
   ...(obra.tecnica ? [{etiqueta: 'Técnica', valor: obra.tecnica}] : []),
   ...(medidas ? [{etiqueta: 'Medidas', valor: medidas}] : []),
-  ...(coleccion ? [{etiqueta: 'Colección', valor: coleccion.nombre, href: hrefColeccion(coleccion.slug), color: 'cian' as const}] : []),
+  ...(coleccion ? [{etiqueta: 'Colección', valor: coleccion.nombre, href: hrefColeccion(coleccion.slug)}] : []),
 ]
-const posicion = `${d.numero(obra)} / ${dosCifras(d.total)}`
+const descripcion =
+  obra.descripcion ??
+  `${obra.titulo}${obra.anio ? ` (${obra.anio})` : ''}. ${[obra.tecnica, medidas].filter(Boolean).join(', ')}${obra.tecnica || medidas ? '. ' : ''}Obra de ${contenido.config.nombre}.`
 ---
 
-<Base
-  titulo={obra.titulo}
-  seccion="obras"
-  marquesina={d.marquesina.obra(obra)}
-  descripcion={obra.descripcion ?? `${obra.titulo}${obra.anio ? ` (${obra.anio})` : ''}. ${[obra.tecnica, medidas].filter(Boolean).join(', ')}${obra.tecnica || medidas ? '. ' : ''}Obra de ${contenido.config.nombre}.`}
-  imagen={obra.imagen.src}
->
-  <div class="barra">
+<Base titulo={obra.titulo} seccion="obras" descripcion={descripcion} imagen={obra.imagen.src}>
+  <div class="barra contenedor">
     <nav class="migas" aria-label="Migas de pan">
-      <span class="solo-desktop">
-        <a href="/">Obras</a>
-        {
-          coleccion && (
-            <>
-              <span aria-hidden="true"> / </span>
-              <a href={hrefColeccion(coleccion.slug)}>{coleccion.nombre}</a>
-            </>
-          )
-        }
-        <span aria-hidden="true"> / </span>
-        <span class="actual" aria-current="page">{obra.titulo}</span>
-      </span>
-      <a href="/" class="solo-mobile">← Obras</a>
+      <a href="/">Obras</a>
+      {
+        coleccion && (
+          <>
+            <span aria-hidden="true"> / </span>
+            <a href={hrefColeccion(coleccion.slug)}>{coleccion.nombre}</a>
+          </>
+        )
+      }
+      <span aria-hidden="true"> / </span>
+      <span aria-current="page">{obra.titulo}</span>
     </nav>
-    <div class="vecinas">
-      {anterior && <a class="solo-desktop" href={hrefObra(anterior.slug)} rel="prev">← {anterior.titulo}</a>}
-      <span class="posicion">{posicion}</span>
-      {siguiente && <a class="solo-desktop" href={hrefObra(siguiente.slug)} rel="next">{siguiente.titulo} →</a>}
-    </div>
+    <p class="posicion num">
+      {numero} / {dosCifras(d.total)}
+    </p>
   </div>
 
-  <div class="obra">
+  <div class="obra contenedor">
     <section class="visor" aria-label="Imágenes de la obra">
-      <div class="marco" data-visor>
+      <div class="pared">
         {
           vistas.map((v, i) => (
             <div class="vista" data-vista={i} hidden={i !== 0}>
-              <ObraImagen
-                imagen={v.imagen}
-                sizes="(max-width: 767.98px) 100vw, 60vw"
-                eager={i === 0}
-                class={v.registro ? 'registro' : undefined}
-              />
+              <span class="marco corte">
+                <ObraImagen imagen={v.imagen} sizes="(max-width: 767.98px) 100vw, 62vw" eager={i === 0} class="foto" />
+              </span>
             </div>
           ))
         }
+        <p class="cuadro num" aria-hidden="true" data-cuadro>
+          ▸ {vistas[0].codigo}
+        </p>
       </div>
 
       {
         vistas.length > 1 && (
-          <>
-            <div class="selector" role="group" aria-label="Vistas de la obra">
-              {vistas.map((v, i) => (
-                <button type="button" class="boton-vista" aria-pressed={i === 0 ? 'true' : 'false'} aria-label={v.etiqueta} data-ir-a={i}>
-                  <span class="mini">
-                    <img src={v.imagen.miniatura ?? v.imagen.src} alt="" width="52" height="52" loading="lazy" decoding="async" />
-                  </span>
-                  <span class="etiqueta-vista" aria-hidden="true">{v.etiqueta}</span>
-                </button>
-              ))}
-            </div>
-            <p class="vista-actual" aria-live="polite" data-vista-actual>
-              {vistas[0].etiqueta}
-            </p>
-          </>
+          <div class="selector" role="group" aria-label="Vistas de la obra">
+            {vistas.map((v, i) => (
+              <button type="button" class="boton-vista" aria-pressed={i === 0 ? 'true' : 'false'} data-ir-a={i} data-codigo={v.codigo}>
+                <span class="mini con-marca">
+                  <img src={v.imagen.miniatura ?? v.imagen.src} alt="" width="72" height="72" loading="lazy" decoding="async" />
+                  <Marca tipo="recuadro" class="marca-vista" />
+                </span>
+                <span class="codigo num">{v.codigo}</span>
+                <span class="nombre-vista">{v.etiqueta}</span>
+              </button>
+            ))}
+          </div>
         )
       }
     </section>
 
     <aside class="ficha">
-      <p class="numero">
-        N.º {d.numero(obra)}
-        {
-          coleccion && (
-            <>
-              {' — '}
-              <a href={hrefColeccion(coleccion.slug)}>{coleccion.nombre}</a>
-            </>
-          )
-        }
+      <p class="encabezado">
+        <span class="punto num">Nº {numero}</span>
+        {obra.imagen.color && <span class="muestra" style={`background:${obra.imagen.color}`} />}
+        {coleccion && <a href={hrefColeccion(coleccion.slug)}>{coleccion.nombre}</a>}
       </p>
-      <Overprint as="h1" text={partirEnDos(obra.titulo)} ajustar size="160px" mobileSize="100px" offset={[12, 10]} class="titulo" />
-      <DataList datos={datos} class="datos" />
-      {obra.descripcion && <p class="descripcion">{obra.descripcion}</p>}
-      <Button variante="rosa" href={`/contacto?obra=${obra.slug}`} class="consultar">Consultar por esta obra →</Button>
+      <h1 class="titulo grotesca">{obra.titulo}</h1>
+      {datos.length > 0 && <DataList datos={datos} class="datos" />}
+      {obra.descripcion && <p class="parrafo descripcion">{obra.descripcion}</p>}
+      <Button href={`/contacto?obra=${obra.slug}`} class="consultar">Consultar por esta obra →</Button>
     </aside>
   </div>
 
   {
     (anterior || siguiente) && (
-      <nav class="vecinas-mobile" aria-label="Otras obras">
+      <nav class="vecinas contenedor" aria-label="Otras obras">
         {anterior && (
-          <a href={hrefObra(anterior.slug)} rel="prev">
+          <a href={hrefObra(anterior.slug)} rel="prev" class="ant">
             <span class="dir">← Anterior</span>
-            <span class="nombre">{anterior.titulo}</span>
+            <span class="vec-titulo grotesca">{anterior.titulo}</span>
           </a>
         )}
         {siguiente && (
           <a href={hrefObra(siguiente.slug)} rel="next" class="sig">
             <span class="dir">Siguiente →</span>
-            <span class="nombre">{siguiente.titulo}</span>
+            <span class="vec-titulo grotesca">{siguiente.titulo}</span>
           </a>
         )}
       </nav>
@@ -156,13 +143,19 @@ const posicion = `${d.numero(obra)} / ${dosCifras(d.total)}`
 
   {
     coleccion && masDe.length > 0 && (
-      <section class="mas">
+      <section class="mas contenedor" aria-labelledby="mas-titulo">
         <div class="mas-head">
-          <h2 class="mas-titulo">Más de {coleccion.nombre}</h2>
-          <a class="ver" href={hrefColeccion(coleccion.slug)}>Ver colección →</a>
+          <h2 id="mas-titulo" class="titulo-seccion">
+            Más de {coleccion.nombre}
+          </h2>
+          <a class="ver" href={hrefColeccion(coleccion.slug)}>
+            Ver la colección →
+          </a>
         </div>
-        <ObraGrid variante="mas" bordeSuperior>
-          {masDe.map((o) => <ObraCard obra={d.resumen(o)} variante="mas" />)}
+        <ObraGrid variante="mas">
+          {masDe.map((o) => (
+            <ObraCard obra={d.resumen(o)} variante="mas" />
+          ))}
         </ObraGrid>
       </section>
     )
@@ -170,14 +163,14 @@ const posicion = `${d.numero(obra)} / ${dosCifras(d.total)}`
 </Base>
 
 <script>
-  // Cambio de vista: muestra la imagen elegida en el marco y marca el botón con aria-pressed.
+  // Cambio de vista: muestra la imagen elegida y marca el botón con aria-pressed.
+  const cuadro = document.querySelector<HTMLElement>('[data-cuadro]')
   document.querySelectorAll<HTMLButtonElement>('[data-ir-a]').forEach((boton) => {
     boton.addEventListener('click', () => {
       const i = boton.dataset.irA
       document.querySelectorAll<HTMLElement>('[data-vista]').forEach((v) => (v.hidden = v.dataset.vista !== i))
       document.querySelectorAll('[data-ir-a]').forEach((b) => b.setAttribute('aria-pressed', String(b === boton)))
-      const etiqueta = document.querySelector('[data-vista-actual]')
-      if (etiqueta) etiqueta.textContent = boton.getAttribute('aria-label')
+      if (cuadro) cuadro.textContent = `▸ ${boton.dataset.codigo ?? ''}`
     })
   })
 </script>
@@ -185,63 +178,34 @@ const posicion = `${d.numero(obra)} / ${dosCifras(d.total)}`
 <style>
   .barra {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
+    align-items: baseline;
     gap: 8px 24px;
-    padding: 16px var(--gutter);
-    border-bottom: 1px solid var(--line);
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
-  .migas {
-    color: var(--muted);
-  }
-
-  .migas .actual {
-    color: var(--text);
-  }
-
-  .vecinas {
-    display: flex;
-    gap: 24px;
-  }
-
-  .vecinas a {
-    text-decoration: none;
+    padding-top: 10px;
+    padding-bottom: 22px;
   }
 
   .posicion {
-    color: var(--muted);
-  }
-
-  .solo-mobile,
-  .vecinas-mobile {
-    display: none;
+    flex: none;
+    font-size: 12px;
+    color: var(--tenue);
   }
 
   /* Columnas */
   .obra {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: minmax(0, 8fr) minmax(300px, 4fr);
+    align-items: start;
+    gap: clamp(32px, 5vw, 88px);
   }
 
-  .visor {
-    flex: 1 1 640px;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 40px var(--gutter);
-  }
-
-  .marco {
-    height: min(78vh, 820px);
-    min-height: 520px;
-    padding: 56px;
-    background: var(--frame);
+  .pared {
+    position: relative;
+    height: min(80vh, 860px);
+    min-height: 460px;
+    padding: clamp(40px, 5vw, 84px);
+    background: var(--negro-2);
+    border: 1px solid var(--linea);
   }
 
   .vista {
@@ -255,292 +219,258 @@ const posicion = `${d.numero(obra)} / ${dosCifras(d.total)}`
     display: none;
   }
 
-  .vista :global(.registro) {
-    box-shadow: 14px 14px 0 var(--cyan), -14px -14px 0 var(--pink);
+  .marco {
+    position: relative;
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .marco :global(.foto) {
+    max-height: calc(min(80vh, 860px) - 2 * clamp(40px, 5vw, 84px));
+  }
+
+  .cuadro {
+    position: absolute;
+    right: 14px;
+    bottom: 10px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--tenue);
   }
 
   .selector {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 22px;
+    margin-top: 22px;
   }
 
   .boton-vista {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 64px;
-    padding: 6px 14px 6px 6px;
-    border: 1px solid var(--line-strong);
-    background: transparent;
-    color: var(--text);
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
-  .boton-vista[aria-pressed='true'] {
-    border-color: var(--pink);
-    background: var(--pink);
-    color: var(--bg);
-  }
-
-  @media (hover: hover) {
-    .boton-vista[aria-pressed='false']:hover {
-      border-color: var(--text);
-    }
+    flex-direction: column;
+    gap: 6px;
+    width: 72px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--tenue);
+    font-size: 11px;
+    line-height: 1.3;
+    text-align: left;
   }
 
   .mini {
-    width: 52px;
-    height: 52px;
-    overflow: hidden;
-    background: var(--bg);
+    display: block;
+    width: 72px;
+    height: 72px;
   }
 
   .mini img {
-    width: 100%;
-    height: 100%;
+    width: 72px;
+    height: 72px;
     object-fit: cover;
+    background: var(--negro-3);
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
   }
 
-  .vista-actual {
+  .mini :global(.marca-vista) {
     display: none;
+    top: -7px;
+    left: -7px;
+    width: calc(100% + 14px);
+    height: calc(100% + 14px);
   }
 
+  .codigo {
+    letter-spacing: 0.08em;
+  }
+
+  .nombre-vista {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .boton-vista:hover {
+    color: var(--blanco);
+  }
+
+  .boton-vista:hover .mini img,
+  .boton-vista[aria-pressed='true'] .mini img {
+    opacity: 1;
+  }
+
+  .boton-vista[aria-pressed='true'] {
+    color: var(--blanco);
+  }
+
+  .boton-vista[aria-pressed='true'] .mini :global(.marca-vista) {
+    display: block;
+  }
+
+  /* Ficha */
   .ficha {
     position: sticky;
-    top: 0;
-    flex: 1 1 420px;
-    max-width: 560px;
-    padding: 40px var(--gutter);
+    top: 28px;
   }
 
-  .numero {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--pink);
+  .encabezado {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
+    color: var(--gris);
   }
 
-  .numero a {
-    color: var(--cyan);
-  }
-
-  .ficha :global(.titulo) {
-    margin-top: 8px;
+  .titulo {
+    margin-top: 22px;
+    font-size: clamp(34px, 3.6vw, 60px);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    overflow-wrap: break-word;
   }
 
   .ficha :global(.datos) {
-    margin-top: 20px;
+    margin-top: 32px;
   }
 
   .descripcion {
-    margin-top: 24px;
-    font-size: 15px;
-    line-height: 1.75;
-    color: var(--text-body);
+    margin-top: 28px;
   }
 
   .ficha :global(.consultar) {
-    margin-top: 28px;
+    margin-top: 32px;
+  }
+
+  /* Anterior / siguiente */
+  .vecinas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: clamp(72px, 9vw, 128px);
+  }
+
+  .vecinas a {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 16px;
+    border-top: 1px solid var(--linea);
+    text-decoration: none;
+  }
+
+  .vecinas .sig {
+    grid-column: 2;
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .dir {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--tenue);
+  }
+
+  .vec-titulo {
+    font-size: clamp(20px, 2.4vw, 34px);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+  }
+
+  .vecinas a:hover .vec-titulo {
+    text-decoration: underline;
+    text-decoration-color: var(--rojo);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 0.18em;
   }
 
   /* Más de esta colección */
   .mas {
-    border-top: 2px solid var(--text);
+    margin-top: clamp(112px, 12vw, 176px);
   }
 
   .mas-head {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    align-items: baseline;
-    gap: 8px 24px;
-    padding: 20px var(--gutter) 16px;
-  }
-
-  .mas-titulo {
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: 72px;
-    line-height: 1;
-    text-transform: uppercase;
+    align-items: flex-end;
+    gap: 8px 32px;
+    margin-bottom: 48px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--linea);
   }
 
   .ver {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--acid);
-    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
   }
 
-  @media (max-width: 767.98px) {
-    .barra {
-      flex-wrap: nowrap;
-      padding: 12px var(--gutter);
-      border-bottom: 0;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .migas a {
-      text-decoration: none;
-    }
-
-    .solo-desktop {
-      display: none;
-    }
-
-    .solo-mobile {
-      display: inline;
-    }
-
-    .visor {
-      flex-basis: 100%;
-      gap: 0;
-      padding: 0 var(--gutter);
-    }
-
-    .marco {
-      height: 430px;
-      min-height: 0;
-      padding: 30px;
-    }
-
-    .vista :global(.registro) {
-      box-shadow: 8px 8px 0 var(--cyan), -8px -8px 0 var(--pink);
-    }
-
-    .selector {
-      flex-wrap: nowrap;
-      gap: 6px;
-      padding-top: 12px;
-    }
-
-    .boton-vista {
-      flex: 1;
-      min-width: 0;
-      height: 64px;
-      padding: 0;
-      border: 3px solid var(--line-strong);
-      background: var(--bg);
-    }
-
-    .boton-vista[aria-pressed='true'] {
-      background: var(--bg);
-    }
-
-    .mini {
-      width: 100%;
-      height: 100%;
-    }
-
-    .etiqueta-vista {
-      display: none;
-    }
-
-    .vista-actual {
-      display: block;
-      padding-top: 6px;
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--pink);
-      text-transform: uppercase;
+  @media (max-width: 1023.98px) {
+    .obra {
+      grid-template-columns: 1fr;
     }
 
     .ficha {
       position: static;
-      flex-basis: 100%;
-      max-width: none;
-      padding: 18px var(--gutter) 0;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .barra {
+      padding-bottom: 14px;
     }
 
-    .numero {
-      font-size: 11px;
+    .obra {
+      gap: 32px;
     }
 
-    .ficha :global(.titulo) {
-      margin-top: 6px;
+    .pared {
+      height: min(64vh, 520px);
+      min-height: 320px;
+      margin-inline: calc(var(--gutter) * -1);
+      padding: 32px var(--gutter);
+      border-inline: 0;
     }
 
-    .ficha :global(.datos) {
-      margin-top: 10px;
+    .marco :global(.foto) {
+      max-height: calc(min(64vh, 520px) - 64px);
     }
 
-    .descripcion {
-      margin-top: 16px;
-      font-size: 13px;
-      line-height: 1.7;
+    .selector {
+      gap: 16px;
     }
 
-    .ficha :global(.consultar) {
-      display: flex;
-      width: 100%;
-      min-height: 52px;
-      margin-top: 18px;
+    .boton-vista {
+      width: 64px;
+      min-height: 44px;
+      font-size: 10px;
     }
 
-    .vecinas-mobile {
-      display: flex;
-      margin-top: 18px;
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
+    .mini,
+    .mini img {
+      width: 64px;
+      height: 64px;
     }
 
-    .vecinas-mobile a {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
-      padding: 12px 16px;
-      text-decoration: none;
-    }
-
-    .vecinas-mobile a + a {
-      border-left: 1px solid var(--line);
-    }
-
-    .vecinas-mobile .sig {
-      align-items: flex-end;
-      text-align: right;
-    }
-
-    .vecinas-mobile a:only-child.sig {
-      margin-left: auto;
-    }
-
-    .dir {
-      color: var(--muted);
-    }
-
-    .nombre {
-      font-family: var(--font-display);
-      font-weight: 400;
-      font-size: 34px;
-      line-height: 1;
-    }
-
-    .mas {
-      margin-top: 28px;
+    .vecinas {
+      gap: 16px;
     }
 
     .mas-head {
-      padding: 16px var(--gutter) 12px;
-    }
-
-    .mas-titulo {
-      font-size: 48px;
+      display: block;
     }
 
     .ver {
-      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      margin-top: 4px;
     }
   }
 </style>

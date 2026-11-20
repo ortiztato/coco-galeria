@@ -1,12 +1,11 @@
 ---
-// Botón o link con forma de botón. Sin bordes redondeados en ningún caso.
-//   primario   → fondo ácido, texto negro
-//   rosa       → fondo rosa, texto negro (CTA, "Consultar por esta obra")
-//   secundario → borde 1px claro, fondo transparente
+// Botón o link con forma de botón, a máquina y en mayúsculas.
+//   primario   → blanco papel, texto negro
+//   secundario → filete de 1px, fondo transparente
 import type {HTMLAttributes} from 'astro/types'
 
 type Props = {
-  variante?: 'primario' | 'rosa' | 'secundario'
+  variante?: 'primario' | 'secundario'
   /** md = 48 px de alto, lg = 56 px. */
   tamano?: 'md' | 'lg'
   /** Ocupa todo el ancho disponible. */
@@ -39,20 +38,26 @@ const clases = ['btn', `btn--${variante}`, `btn--${tamano}`, {'btn--bloque': blo
     justify-content: center;
     gap: 0.6ch;
     min-height: 48px;
-    padding: 0 20px;
-    border: 0;
+    padding: 0 22px;
+    border: 1px solid var(--blanco);
     border-radius: 0;
-    font-family: var(--font-mono);
-    font-size: 13px;
-    font-weight: 700;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    font-weight: 500;
     line-height: 1.2;
+    letter-spacing: 0.06em;
     text-align: center;
     text-decoration: none;
     text-transform: uppercase;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
   }
 
   .btn--lg {
     min-height: 56px;
+    padding: 0 30px;
   }
 
   .btn--bloque {
@@ -60,44 +65,31 @@ const clases = ['btn', `btn--${variante}`, `btn--${tamano}`, {'btn--bloque': blo
     width: 100%;
   }
 
-  .btn--primario,
-  .btn--primario:hover {
-    background: var(--acid);
-    color: var(--bg);
-  }
-
-  .btn--rosa,
-  .btn--rosa:hover {
-    background: var(--pink);
-    color: var(--bg);
+  .btn--primario {
+    background: var(--blanco);
+    color: var(--negro);
   }
 
   .btn--secundario {
-    border: 1px solid var(--text);
     background: transparent;
-    color: var(--text);
+    color: var(--blanco);
   }
 
   @media (hover: hover) {
-    .btn--primario:hover,
-    .btn--rosa:hover {
-      filter: brightness(1.08);
+    .btn--primario:hover {
+      background: var(--rojo);
+      border-color: var(--rojo);
+      color: var(--negro);
     }
 
     .btn--secundario:hover {
-      background: var(--text);
-      color: var(--bg);
+      background: var(--blanco);
+      color: var(--negro);
     }
   }
 
   .btn:disabled {
     opacity: 0.6;
     cursor: progress;
-  }
-
-  @media (max-width: 767.98px) {
-    .btn {
-      font-size: 12px;
-    }
   }
 </style>

@@ -1,87 +1,80 @@
 ---
-// Acerca de: hero, foto con sombra de registro + crédito, bio, statement, botones y trayectoria.
+// Acerca de: foto del artista en blanco y negro (como fotocopia) con marcas de corte, bio,
+// statement, botones y trayectoria a máquina.
 import Base from '../layouts/Base.astro'
-import Overprint from '../components/Overprint.astro'
 import Button from '../components/Button.astro'
 import ObraImagen from '../components/ObraImagen.astro'
 import {getSitio} from '../lib/contenido'
 
-const {contenido, d} = await getSitio()
+const {contenido} = await getSitio()
 const {acerca} = contenido
-const coloresCv = ['acid', 'cian', 'rosa', 'texto']
 const cv = acerca.cv.filter((s) => s.entradas.length > 0)
+const pie = [acerca.creditoFoto && `Foto: ${acerca.creditoFoto}`, acerca.lugarFoto].filter(Boolean).join(' — ')
 ---
 
-<Base titulo="Acerca de" seccion="acerca" marquesina={d.marquesina.acerca} descripcion={acerca.bioDestacada}>
-  <section class="hero">
-    <Overprint
-      as="h1"
-      text="Acerca de"
-      size="clamp(210px, 26vw, 380px)"
-      height="clamp(210px, 25.5vw, 370px)"
-      mobileSize="150px"
-      mobileHeight="150px"
-    />
+<Base titulo="Acerca de" seccion="acerca" descripcion={acerca.bioDestacada}>
+  <section class="cabecera contenedor">
+    <h1 class="titulo-pagina">Acerca de</h1>
   </section>
 
-  <div class="cuerpo">
+  <div class:list={['cuerpo contenedor', {'cuerpo--sin-foto': !acerca.foto}]}>
     {
       acerca.foto && (
-        <div class="col-foto">
-          <figure class="foto">
-            <ObraImagen imagen={acerca.foto} sizes="(max-width: 767.98px) 90vw, 560px" eager class="foto-img" />
-          </figure>
-          {(acerca.creditoFoto || acerca.lugarFoto) && (
-            <p class="credito">
-              <span>{acerca.creditoFoto && `Foto: ${acerca.creditoFoto}`}</span>
-              <span>{acerca.lugarFoto}</span>
-            </p>
-          )}
-        </div>
+        <figure class="foto">
+          <span class="foto-marco corte">
+            <ObraImagen imagen={acerca.foto} sizes="(max-width: 767.98px) 90vw, 480px" eager class="foto-img" />
+          </span>
+          {pie && <figcaption class="pie">{pie}</figcaption>}
+        </figure>
       )
     }
 
-    <div class:list={['col-texto', {'sin-foto': !acerca.foto}]}>
-      {
-        (acerca.bioDestacada || acerca.bio) && (
-          <>
-            <h2 class="rotulo">Bio</h2>
-            {acerca.bioDestacada && <p class="bio-destacada">{acerca.bioDestacada}</p>}
-            {acerca.bio && <p class="parrafo">{acerca.bio}</p>}
-          </>
-        )
-      }
+    <div class="texto">
+      {acerca.bioDestacada && <p class="bio-destacada">{acerca.bioDestacada}</p>}
+      {acerca.bio && <p class="parrafo bio">{acerca.bio}</p>}
 
       {
         (acerca.statementFrase || acerca.statement) && (
-          <>
-            <h2 class="rotulo rotulo-statement">Statement</h2>
-            <blockquote class="statement">
-              {acerca.statementFrase && <p class="frase">{acerca.statementFrase}</p>}
-              {acerca.statement && <p class="parrafo">{acerca.statement}</p>}
-            </blockquote>
-          </>
+          <section class="statement" aria-labelledby="statement-titulo">
+            <h2 id="statement-titulo" class="etiqueta punto">
+              Statement
+            </h2>
+            {acerca.statementFrase && (
+              <blockquote class="frase grotesca">
+                <p>{acerca.statementFrase}</p>
+              </blockquote>
+            )}
+            {acerca.statement && <p class="parrafo">{acerca.statement}</p>}
+          </section>
         )
       }
 
-      <div class="botones solo-desktop">
-        <Button variante="rosa" href="/contacto">Contacto →</Button>
-        {acerca.cvPdfUrl && <Button variante="secundario" href={acerca.cvPdfUrl} target="_blank" rel="noopener">Descargar CV (PDF) ↓</Button>}
+      <div class="botones">
+        <Button href="/contacto">Escribime →</Button>
+        {
+          acerca.cvPdfUrl && (
+            <Button variante="secundario" href={acerca.cvPdfUrl} target="_blank" rel="noopener">
+              Descargar CV (PDF) ↓
+            </Button>
+          )
+        }
       </div>
     </div>
   </div>
 
   {
     cv.length > 0 && (
-      <section class="trayectoria">
-        <h2 class="tray-titulo">Trayectoria</h2>
-        {cv.map((seccion, i) => (
+      <section class="trayectoria contenedor" aria-labelledby="trayectoria-titulo">
+        <h2 id="trayectoria-titulo" class="titulo-seccion">
+          Trayectoria
+        </h2>
+        {cv.map((seccion) => (
           <div class="grupo">
-            <h3 class:list={['grupo-titulo', coloresCv[i % coloresCv.length]]}>{seccion.titulo}</h3>
+            <h3 class="etiqueta grupo-titulo">{seccion.titulo}</h3>
             <ul class="entradas">
               {seccion.entradas.map((e) => (
                 <li>
-                  <span class="anio">{e.anio}</span>
+                  <span class="anio num">{e.anio}</span>
                   <span>{e.texto}</span>
                 </li>
               ))}
@@ -91,275 +84,163 @@ const cv = acerca.cv.filter((s) => s.entradas.length > 0)
       </section>
     )
   }
-
-  <div class="botones solo-mobile">
-    {acerca.cvPdfUrl && <Button variante="secundario" href={acerca.cvPdfUrl} target="_blank" rel="noopener" bloque>Descargar CV (PDF) ↓</Button>}
-    <Button variante="rosa" href="/contacto" bloque>Contacto →</Button>
-  </div>
 </Base>
 
 <style>
-  .hero {
-    padding: 24px var(--gutter) 0;
+  .cabecera {
+    padding-top: clamp(32px, 5vw, 72px);
+    padding-bottom: clamp(48px, 6vw, 88px);
   }
 
   .cuerpo {
-    display: flex;
-    flex-wrap: wrap;
-    border-top: 2px solid var(--text);
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: start;
+    gap: clamp(48px, 6vw, 112px);
   }
 
-  .col-foto {
-    flex: 1 1 420px;
-    max-width: 600px;
-    padding: 40px var(--gutter);
+  .cuerpo--sin-foto {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .foto {
-    box-shadow: 14px 14px 0 var(--cyan), -14px -14px 0 var(--pink);
+    position: sticky;
+    top: 28px;
   }
 
-  .foto :global(.foto-img) {
+  .foto-marco {
+    position: relative;
+    display: block;
+  }
+
+  .foto-marco :global(.foto-img) {
     width: 100%;
     max-height: none;
     aspect-ratio: 4 / 5;
     object-fit: cover;
+    filter: grayscale(1) contrast(1.12);
   }
 
-  .credito {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    margin-top: 28px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--muted);
+  .pie {
+    margin-top: 20px;
+    font-size: 11px;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
+    color: var(--tenue);
   }
 
-  .col-texto {
-    flex: 1 1 520px;
-    min-width: 0;
-    padding: 40px var(--gutter);
-    border-left: 1px solid var(--line);
-  }
-
-  .col-texto.sin-foto {
-    border-left: 0;
-  }
-
-  .rotulo {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--pink);
-    text-transform: uppercase;
-  }
-
-  .rotulo-statement {
-    margin-top: 40px;
+  .texto {
+    max-width: 760px;
   }
 
   .bio-destacada {
-    max-width: 680px;
-    margin-top: 10px;
-    font-size: 22px;
-    line-height: 1.5;
+    font-family: var(--grotesca);
+    font-stretch: 100%;
+    font-weight: 500;
+    font-size: clamp(24px, 2.4vw, 34px);
+    line-height: 1.22;
+    letter-spacing: -0.01em;
+    white-space: pre-line;
   }
 
-  .parrafo {
-    max-width: 680px;
-    margin-top: 18px;
-    font-size: 15px;
-    line-height: 1.75;
-    color: var(--text-body);
+  .bio {
+    margin-top: 28px;
+    white-space: pre-line;
   }
 
   .statement {
-    margin: 10px 0 0;
+    margin-top: 64px;
     padding-top: 18px;
-    border-top: 2px solid var(--text);
+    border-top: 1px solid var(--linea);
   }
 
   .frase {
-    max-width: 760px;
-    font-family: var(--font-display);
-    font-size: 64px;
+    margin-top: 20px;
+    font-size: clamp(24px, 2.6vw, 40px);
     line-height: 1;
-    text-transform: uppercase;
+    letter-spacing: -0.015em;
+  }
+
+  .frase + .parrafo {
+    margin-top: 24px;
+  }
+
+  .statement .parrafo {
+    white-space: pre-line;
   }
 
   .botones {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 32px;
+    gap: 12px;
+    margin-top: 48px;
   }
 
-  .solo-mobile {
-    display: none;
-  }
-
+  /* Trayectoria */
   .trayectoria {
-    border-top: 2px solid var(--text);
+    margin-top: clamp(112px, 12vw, 176px);
   }
 
-  .tray-titulo {
-    padding: 20px var(--gutter) 8px;
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: 96px;
-    line-height: 1;
-    text-transform: uppercase;
+  .trayectoria .titulo-seccion {
+    padding-bottom: 22px;
   }
 
   .grupo {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 32px;
-    padding: 20px var(--gutter);
-    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: minmax(200px, 3fr) minmax(0, 9fr);
+    gap: 12px 40px;
+    padding: 22px 0;
+    border-top: 1px solid var(--linea);
   }
 
   .grupo-titulo {
-    flex: 0 0 260px;
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
-  .acid {
-    color: var(--acid);
-  }
-
-  .cian {
-    color: var(--cyan);
-  }
-
-  .rosa {
-    color: var(--pink);
-  }
-
-  .entradas {
-    flex: 1 1 520px;
-    display: flex;
-    flex-direction: column;
+    padding-top: 2px;
+    color: var(--blanco);
   }
 
   .entradas li {
-    display: flex;
-    gap: 24px;
-    padding: 8px 0;
-    border-bottom: 1px solid #1c1c1c;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 16px;
+    padding: 5px 0;
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.55;
+    color: var(--gris);
   }
 
   .anio {
-    flex: 0 0 64px;
-    font-weight: 700;
-    color: var(--muted);
+    color: var(--tenue);
   }
 
-  @media (max-width: 767.98px) {
-    .hero {
-      padding-top: 16px;
-    }
-
+  @media (max-width: 1023.98px) {
     .cuerpo {
-      display: block;
-      border-top: 0;
-    }
-
-    .col-foto {
-      max-width: none;
-      padding: 18px 26px 0;
+      grid-template-columns: minmax(0, 1fr);
     }
 
     .foto {
-      box-shadow: 8px 8px 0 var(--cyan), -8px -8px 0 var(--pink);
+      position: static;
+      max-width: 460px;
     }
+  }
 
-    .credito {
-      margin-top: 18px;
-      font-size: 10px;
-    }
-
-    .col-texto {
-      padding: 28px var(--gutter) 0;
-      border-left: 0;
-    }
-
-    .rotulo {
-      font-size: 11px;
-    }
-
-    .rotulo-statement {
-      margin-top: 24px;
-    }
-
-    .bio-destacada {
-      margin-top: 6px;
-      font-size: 16px;
-    }
-
-    .parrafo {
-      margin-top: 12px;
-      font-size: 12px;
-      line-height: 1.7;
-    }
-
+  @media (max-width: 767.98px) {
     .statement {
-      margin-top: 6px;
-      padding-top: 10px;
+      margin-top: 48px;
     }
 
-    .frase {
-      font-size: 46px;
-    }
-
-    .solo-desktop {
-      display: none;
-    }
-
-    .solo-mobile {
-      display: flex;
+    .botones {
       flex-direction: column;
-      gap: 8px;
-      margin-top: 0;
-      padding: 18px var(--gutter) 0;
-    }
-
-    .trayectoria {
-      margin-top: 24px;
-      border-top: 0;
-    }
-
-    .tray-titulo {
-      padding: 0 var(--gutter);
-      font-size: 64px;
+      margin-top: 36px;
     }
 
     .grupo {
-      display: block;
-      padding: 0 var(--gutter);
-      border-top: 0;
-    }
-
-    .grupo-titulo {
-      padding: 10px 0 4px;
-      border-top: 1px solid var(--line);
-      font-size: 11px;
+      grid-template-columns: minmax(0, 1fr);
+      padding: 20px 0;
     }
 
     .entradas li {
-      gap: 14px;
-      padding: 6px 0;
-      border-bottom: 0;
-      font-size: 12px;
-    }
-
-    .anio {
-      flex-basis: 48px;
+      grid-template-columns: 56px minmax(0, 1fr);
+      font-size: 13px;
     }
   }
 </style>

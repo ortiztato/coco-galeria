@@ -4,13 +4,13 @@
 // El envío va a Web3Forms con fetch (sin backend): validación nativa, honeypot antispam y
 // estados enviando / enviado / error. El motivo y la referencia viajan en el asunto del email.
 import Base from '../layouts/Base.astro'
-import Overprint from '../components/Overprint.astro'
 import FilterChips from '../components/FilterChips.astro'
 import Button from '../components/Button.astro'
+import Marca from '../components/Marca.astro'
 import {getSitio} from '../lib/contenido'
 import {instagramUrl} from '../lib/sitio'
 
-const {contenido, d} = await getSitio()
+const {contenido} = await getSitio()
 const {config, obras} = contenido
 const taller = [config.ciudad, config.pais].filter(Boolean).join(', ')
 
@@ -23,26 +23,21 @@ const motivos = [
 const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, ${o.anio}`]))
 ---
 
-<Base titulo="Contacto" seccion="contacto" marquesina={d.marquesina.contacto} footer="corto">
-  <section class="hero">
-    <Overprint
-      as="h1"
-      text="Contacto"
-      size="clamp(210px, 26vw, 380px)"
-      height="clamp(210px, 25.5vw, 370px)"
-      mobileSize="150px"
-      mobileHeight="150px"
-    />
+<Base titulo="Contacto" seccion="contacto" footer="corto">
+  <section class="cabecera contenedor">
+    <p class="etiqueta punto">Consultas — exposiciones — prensa</p>
+    <h1 class="titulo-pagina">Contacto</h1>
+    <p class="parrafo intro">Para consultas sobre obras, exposiciones o prensa. También podés escribir directo al mail.</p>
   </section>
 
-  <div class="cuerpo">
+  <div class="cuerpo contenedor">
     <dl class="datos">
       {
         config.email && (
           <div class="dato">
             <dt>Email</dt>
             <dd>
-              <a class="grande" href={`mailto:${config.email}`}>
+              <a class="grande grotesca" href={`mailto:${config.email}`}>
                 {config.email}
               </a>
             </dd>
@@ -54,7 +49,7 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
           <div class="dato">
             <dt>Instagram</dt>
             <dd>
-              <a class="grande cian" href={instagramUrl(config.instagram)} target="_blank" rel="noopener">
+              <a class="grande grotesca" href={instagramUrl(config.instagram)} target="_blank" rel="noopener">
                 @{config.instagram} ↗
               </a>
             </dd>
@@ -66,7 +61,7 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
           <div class="dato">
             <dt>Taller</dt>
             <dd>
-              <span class="grande">{taller}</span>
+              <span class="grande grotesca">{taller}</span>
               {config.notaTaller && <span class="nota">{config.notaTaller}</span>}
             </dd>
           </div>
@@ -76,7 +71,7 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
         config.representacion && (
           <div class="dato">
             <dt>Representación</dt>
-            <dd class="grande">{config.representacion}</dd>
+            <dd class="grande grotesca">{config.representacion}</dd>
           </div>
         )
       }
@@ -91,13 +86,8 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
         data-sitio={config.nombre}
       >
         <fieldset class="motivo">
-          <legend>Motivo</legend>
-          <FilterChips
-            id="motivo"
-            etiqueta="Motivo del mensaje"
-            envolver
-            opciones={motivos.map(({valor, label}) => ({valor, label}))}
-          />
+          <legend class="etiqueta">Motivo</legend>
+          <FilterChips id="motivo" etiqueta="Motivo del mensaje" envolver opciones={motivos.map(({valor, label}) => ({valor, label}))} />
           <input type="hidden" name="motivo" value={motivos[0].label} data-motivo />
         </fieldset>
 
@@ -106,22 +96,22 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
 
         <div class="fila">
           <label class="campo">
-            Nombre
+            <span class="etiqueta">Nombre</span>
             <input class="field" type="text" name="nombre" autocomplete="name" placeholder="Tu nombre" required />
           </label>
           <label class="campo">
-            Email
+            <span class="etiqueta">Email</span>
             <input class="field" type="email" name="email" autocomplete="email" placeholder="tu@email.com" required />
           </label>
         </div>
 
         <label class="campo">
-          <span data-campo-label>{motivos[0].campo}</span>
+          <span class="etiqueta" data-campo-label>{motivos[0].campo}</span>
           <input class="field" type="text" name="referencia" placeholder={motivos[0].placeholder} data-campo />
         </label>
 
         <label class="campo">
-          Mensaje
+          <span class="etiqueta">Mensaje</span>
           <textarea class="field" name="mensaje" rows="6" placeholder="Escribí tu mensaje" required></textarea>
         </label>
 
@@ -136,18 +126,12 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
       </form>
 
       <div class="enviado" role="status" tabindex="-1" hidden data-enviado>
-        <Overprint
-          as="p"
-          text="Gracias ★"
-          size="260px"
-          height="250px"
-          offset={[14, 10]}
-          mobileSize="160px"
-          mobileHeight="155px"
-        />
-        <p class="enviado-texto">Mensaje enviado. Te respondo a la brevedad al email que dejaste.</p>
+        <p class="gracias grotesca">
+          <span class="con-marca">Gracias<Marca tipo="circulo" class="marca-gracias" /></span>
+        </p>
+        <p class="parrafo">Mensaje enviado. Te respondo a la brevedad al email que dejaste.</p>
         <div class="enviado-botones">
-          <Button variante="rosa" href="/">Volver a las obras →</Button>
+          <Button href="/">Volver a las obras →</Button>
           <Button variante="secundario" data-otro>Escribir otro mensaje</Button>
         </div>
       </div>
@@ -257,26 +241,36 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
 </script>
 
 <style>
-  .hero {
-    padding: 24px var(--gutter) 0;
+  .cabecera {
+    padding-top: clamp(32px, 5vw, 72px);
+    padding-bottom: clamp(48px, 6vw, 88px);
+  }
+
+  .cabecera .titulo-pagina {
+    margin-top: 18px;
+  }
+
+  .intro {
+    max-width: 48ch;
+    margin-top: 26px;
   }
 
   .cuerpo {
-    display: flex;
-    flex-wrap: wrap;
-    border-top: 2px solid var(--text);
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: start;
+    gap: clamp(40px, 6vw, 112px);
+  }
+
+  .cuerpo > * {
+    padding-top: 28px;
+    border-top: 1px solid var(--linea);
   }
 
   /* Datos de contacto */
-  .datos {
-    flex: 1 1 380px;
-    max-width: 520px;
-    padding: 40px var(--gutter);
-  }
-
   .dato {
     padding: 18px 0;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--linea);
   }
 
   .dato:first-child {
@@ -288,46 +282,44 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
   }
 
   dt {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
+    color: var(--tenue);
   }
 
   .grande {
     display: block;
-    font-family: var(--font-display);
-    font-size: 64px;
-    line-height: 1;
-    text-decoration: none;
-    text-transform: uppercase;
+    margin-top: 8px;
+    font-size: clamp(18px, 1.8vw, 26px);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
     overflow-wrap: anywhere;
   }
 
-  .cian {
-    color: var(--cyan);
+  a.grande {
+    text-decoration: none;
+  }
+
+  a.grande:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--rojo);
+    text-decoration-thickness: 3px;
   }
 
   .nota {
     display: block;
-    margin-top: 6px;
+    margin-top: 8px;
     font-size: 13px;
-    color: var(--muted);
+    color: var(--gris);
   }
 
   /* Formulario */
-  .col-form {
-    flex: 1 1 560px;
-    min-width: 0;
-    padding: 40px var(--gutter);
-    border-left: 1px solid var(--line);
-  }
-
   .form {
     display: flex;
     flex-direction: column;
-    gap: 26px;
-    max-width: 760px;
+    gap: 28px;
+    max-width: 780px;
   }
 
   .form[hidden],
@@ -342,31 +334,19 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
   }
 
   legend {
-    margin-bottom: 12px;
     padding: 0;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--pink);
-    text-transform: uppercase;
   }
 
   .fila {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 26px 32px;
-  }
-
-  .fila .campo {
-    flex: 1 1 260px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px 32px;
   }
 
   .campo {
     display: flex;
     flex-direction: column;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--muted);
-    text-transform: uppercase;
+    gap: 2px;
   }
 
   .field {
@@ -374,23 +354,26 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
     min-height: 52px;
     padding: 12px 0;
     border: 0;
-    border-bottom: 2px solid var(--line-strong);
+    border-bottom: 1px solid var(--linea-fuerte);
     border-radius: 0;
     background: transparent;
-    color: var(--text);
-    font-family: var(--font-mono);
+    color: var(--blanco);
+    font-family: var(--mono);
     font-size: 16px;
-    font-weight: 400;
-    text-transform: none;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
   .field:focus {
     outline: none;
-    border-bottom-color: var(--acid);
+    border-bottom-color: var(--rojo);
+    box-shadow: 0 1px 0 var(--rojo);
   }
 
   .field::placeholder {
-    color: var(--placeholder);
+    color: var(--tenue);
+    opacity: 0.8;
   }
 
   textarea.field {
@@ -403,16 +386,12 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
     flex-wrap: wrap;
     align-items: center;
     gap: 16px 24px;
-  }
-
-  .enviar :global(.boton-enviar) {
-    padding: 0 28px;
-    font-size: 14px;
+    margin-top: 8px;
   }
 
   .aviso {
     font-size: 12px;
-    color: var(--muted);
+    color: var(--tenue);
   }
 
   .trampa {
@@ -424,10 +403,10 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
   }
 
   .error {
-    padding: 12px 16px;
-    border-left: 4px solid var(--pink);
-    background: var(--surface);
-    font-size: 13px;
+    padding: 14px 16px;
+    border-left: 3px solid var(--rojo);
+    background: var(--negro-2);
+    font-size: 14px;
     line-height: 1.6;
   }
 
@@ -435,125 +414,70 @@ const obrasPorSlug = Object.fromEntries(obras.map((o) => [o.slug, `${o.titulo}, 
     display: none;
   }
 
-  .error a {
-    color: var(--acid);
-  }
-
   /* Enviado */
   .enviado {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    max-width: 760px;
+    gap: 24px;
+    max-width: 780px;
   }
 
   .enviado:focus {
     outline: none;
   }
 
-  .enviado-texto {
-    padding-top: 18px;
-    border-top: 2px solid var(--text);
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--text-body);
+  .gracias {
+    padding: 0.3em 0.6em 0.2em;
+    font-size: clamp(52px, 7vw, 120px);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+  }
+
+  .gracias > span {
+    display: inline-block;
+  }
+
+  .gracias :global(.marca-gracias) {
+    stroke-width: 3px;
   }
 
   .enviado-botones {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 1023.98px) {
+    .cuerpo {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   @media (max-width: 767.98px) {
-    .hero {
-      padding-top: 16px;
-    }
-
     .cuerpo {
-      display: block;
-      margin: 14px var(--gutter) 0;
+      gap: 48px;
     }
 
-    .datos {
-      max-width: none;
-      padding: 0;
-    }
-
-    .dato,
-    .dato:first-child {
-      padding: 10px 0;
-    }
-
-    .dato:last-child {
-      border-bottom: 1px solid var(--line);
-    }
-
-    dt {
-      font-size: 10px;
-    }
-
-    .grande {
-      font-size: 44px;
-    }
-
-    .col-form {
-      padding: 24px 0 0;
-      border-left: 0;
-    }
-
-    .form {
-      gap: 20px;
-    }
-
-    legend {
-      margin-bottom: 10px;
-      font-size: 11px;
+    .cuerpo > * {
+      padding-top: 24px;
     }
 
     .fila {
-      flex-direction: column;
-      gap: 20px;
+      grid-template-columns: 1fr;
     }
 
-    .fila .campo {
-      flex: none;
-    }
-
-    .campo {
-      font-size: 11px;
-    }
-
-    .field {
-      min-height: 48px;
-      padding: 10px 0;
+    .form {
+      gap: 24px;
     }
 
     .enviar :global(.boton-enviar) {
       display: flex;
       width: 100%;
-      font-size: 13px;
-    }
-
-    .enviado {
-      gap: 16px;
-      padding-top: 4px;
-    }
-
-    .enviado-texto {
-      padding-top: 12px;
-      font-size: 13px;
-      line-height: 1.6;
     }
 
     .enviado-botones {
       flex-direction: column;
-      gap: 8px;
-    }
-
-    .enviado-botones :global(.btn) {
-      display: flex;
-      width: 100%;
     }
   }
 </style>

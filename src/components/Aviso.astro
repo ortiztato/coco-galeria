@@ -1,0 +1,51 @@
+---
+// Aviso arriba de todo (ej. "Muestra en Galería X hasta el 30/11"), con punto rojo de "en vivo".
+// Sale de "Datos del sitio → Avisos"; si está vacío, no se muestra.
+interface Props {
+  items: string[]
+}
+
+const {items} = Astro.props
+---
+
+<p class="aviso">
+  <span class="punto"></span>
+  {
+    items.map((t, i) => (
+      <>
+        {i > 0 && (
+          <span class="sep" aria-hidden="true">
+            /
+          </span>
+        )}
+        <span>{t}</span>
+      </>
+    ))
+  }
+</p>
+
+<style>
+  .aviso {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2px 12px;
+    padding: 8px var(--gutter);
+    border-bottom: 1px solid var(--linea);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--gris);
+  }
+
+  .punto::before {
+    margin-right: 0;
+  }
+
+  .sep {
+    color: var(--tenue);
+  }
+</style>

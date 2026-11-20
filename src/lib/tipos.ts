@@ -10,6 +10,10 @@ export interface Imagen {
   alt: string
   /** Miniatura cuadrada recortada (sólo para los botones de vistas). */
   miniatura?: string
+  /** Versión diminuta (data URL) que se ve borrosa mientras carga la imagen. */
+  lqip?: string
+  /** Color dominante de la imagen (#rrggbb). */
+  color?: string
 }
 
 // ── Contenido (lo que se carga en el panel) ──────────────────────────────
@@ -86,13 +90,9 @@ export interface ObraResumen {
   /** Número de orden ya formateado ("01"). */
   numero?: string
   tecnica?: string
-  /** Medidas compactas para la tarjeta ("160×120"). */
+  /** "160 × 120 cm" */
   medidas?: string
   coleccion?: {nombre: string; slug: string}
   imagen: Imagen
 }
 
-export type ColorFila = 'texto' | 'cian' | 'rosa'
-
-/** Color alternado de las filas de colecciones: blanco, cian, blanco, rosa. */
-export const colorFila = (i: number): ColorFila => (['texto', 'cian', 'texto', 'rosa'] as const)[i % 4]

@@ -1,43 +1,57 @@
 ---
-// Grilla de tarjetas sin gap: las líneas son el borde derecho e inferior de cada tarjeta,
-// así las celdas vacías quedan negras. Home / "más de": columnas de 300 px mín. (2 en mobile).
-// Colección: columnas de 440 px mín. (1 en mobile).
+// Grilla tipo hoja de contacto: cada fila tiene un alto común y cada obra ocupa el ancho
+// que le da su proporción real, así ninguna se recorta ni se deforma (ver ObraCard).
+//   home      → filas de ~300 px
+//   coleccion → filas de ~360 px (obras más grandes)
+//   mas       → filas de ~220 px ("Más de esta colección")
 interface Props {
   variante?: 'home' | 'coleccion' | 'mas'
-  /** Línea de 1px arriba de la grilla. */
-  bordeSuperior?: boolean
   id?: string
 }
 
-const {variante = 'home', bordeSuperior = false, id} = Astro.props
+const {variante = 'home', id} = Astro.props
 ---
 
-<div class:list={['obra-grid', `obra-grid--${variante}`, {'obra-grid--borde': bordeSuperior}]} id={id} data-obra-grid>
+<div class:list={['obra-grid', `obra-grid--${variante}`]} id={id} data-obra-grid>
   <slot />
+  <span class="relleno" aria-hidden="true"></span>
 </div>
 
 <style>
   .obra-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 0;
+    --alto-fila: 300px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 80px 48px;
   }
 
   .obra-grid--coleccion {
-    grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+    --alto-fila: 360px;
+    --crecer: 1.35;
+    gap: 96px 64px;
   }
 
-  .obra-grid--borde {
-    border-top: 1px solid var(--line);
+  .obra-grid--mas {
+    --alto-fila: 220px;
+    gap: 64px 40px;
+  }
+
+  /* Ocupa el espacio que sobra en la última fila para que esas obras no se agranden. */
+  .relleno {
+    flex: 1000000 1 0;
   }
 
   @media (max-width: 767.98px) {
-    .obra-grid {
-      grid-template-columns: 1fr 1fr;
+    .obra-grid,
+    .obra-grid--coleccion {
+      --alto-fila: 190px;
+      gap: 56px 28px;
     }
 
-    .obra-grid--coleccion {
-      grid-template-columns: 1fr;
+    .obra-grid--mas {
+      --alto-fila: 160px;
+      gap: 48px 24px;
     }
   }
 </style>

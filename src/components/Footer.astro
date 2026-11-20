@@ -1,121 +1,144 @@
 ---
-import Overprint from './Overprint.astro'
+import Marca from './Marca.astro'
 import {instagramUrl} from '../lib/sitio'
 import {getSitio} from '../lib/contenido'
 
 interface Props {
-  /** "corto": versión de una línea que usa la página de contacto. */
+  /** "corto": sólo la línea final (la usa la página de contacto). */
   variante?: 'completo' | 'corto'
 }
 
 const {variante = 'completo'} = Astro.props
-const {config} = (await getSitio()).contenido
+const {contenido, d} = await getSitio()
+const {config} = contenido
 const anio = new Date().getFullYear()
-const copy = `© ${anio} ${config.nombre.toUpperCase()}`
+const borde = [config.nombre, 'Artista visual', config.ciudad, d.periodoGeneral && `Obra ${d.periodoGeneral}`].filter(Boolean)
 ---
 
-{
-  variante === 'completo' ? (
-    <footer class="footer">
-      <a class="cta" href="/contacto" aria-label="Contacto">
-        <Overprint
-          text="Contacto →"
-          size="clamp(140px, 15vw, 220px)"
-          height="clamp(140px, 14.6vw, 212px)"
-          mobileSize="110px"
-          mobileHeight="110px"
-          offset={[12, 8]}
-          mobileOffset={[8, 6]}
-        />
-      </a>
-      <div class="datos">
-        {config.instagram && <a href={instagramUrl(config.instagram)} target="_blank" rel="noopener">Instagram ↗</a>}
-        {config.email && <a href={`mailto:${config.email}`}>{config.email}</a>}
-        <span class="copy">{copy}</span>
+<footer class="footer">
+  {
+    variante === 'completo' && (
+      <div class="contenedor arriba">
+        <p class="etiqueta">Consultas · exposiciones · prensa</p>
+        <a href="/contacto" class="escribime grotesca con-marca">
+          Escribime <Marca tipo="flecha" />
+          <Marca tipo="subrayado" modo="hover" />
+        </a>
       </div>
-    </footer>
-  ) : (
-    <footer class="footer-corto">
-      <span class="copy">{copy}</span>
-      <span class="links">
-        {config.instagram && <a href={instagramUrl(config.instagram)} target="_blank" rel="noopener">Instagram ↗</a>}
-        <a href="/">Obras</a>
-        <a href="/acerca">Acerca de</a>
-      </span>
-    </footer>
-  )
-}
+    )
+  }
+  <p class="borde contenedor" aria-hidden="true">
+    {
+      borde.map((t, i) => (
+        <>
+          {i > 0 && <span class="sep">▸</span>}
+          <span>{t}</span>
+        </>
+      ))
+    }
+  </p>
+  <div class="contenedor abajo">
+    <span class="copy">© {anio} {config.nombre}</span>
+    <span class="links">
+      {config.email && <a href={`mailto:${config.email}`}>{config.email}</a>}
+      {
+        config.instagram && (
+          <a href={instagramUrl(config.instagram)} target="_blank" rel="noopener">
+            Instagram ↗
+          </a>
+        )
+      }
+    </span>
+  </div>
+</footer>
 
 <style>
   .footer {
     margin-top: auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 20px;
-    padding: 36px var(--gutter);
+    padding-top: clamp(96px, 12vw, 176px);
   }
 
-  .cta {
-    display: block;
-    width: min(720px, 100%);
+  .arriba {
+    padding-top: 28px;
+    padding-bottom: 40px;
+    border-top: 1px solid var(--linea);
+  }
+
+  .escribime {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+    margin-top: 14px;
+    font-size: clamp(44px, 8vw, 140px);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
     text-decoration: none;
   }
 
-  .datos {
+  .escribime :global(.marca--flecha) {
+    stroke-width: 3px;
+  }
+
+  /* Texto de borde de película */
+  .borde {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
-    font-size: 13px;
-    font-weight: 700;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    border-top: 1px solid var(--linea);
+    font-size: 11px;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+    color: var(--tenue);
   }
 
-  .copy {
-    color: var(--muted);
+  .sep {
+    color: var(--rojo);
   }
 
-  .footer-corto {
-    margin-top: auto;
+  .abajo {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    align-items: center;
-    gap: 12px 20px;
-    padding: 24px var(--gutter);
-    border-top: 1px solid var(--line);
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
+    gap: 8px 24px;
+    padding-top: 14px;
+    padding-bottom: 28px;
+    border-top: 1px solid var(--linea);
+    font-size: 12px;
+    color: var(--tenue);
   }
 
   .links {
     display: flex;
-    gap: 24px;
+    flex-wrap: wrap;
+    gap: 4px 28px;
+  }
+
+  .links a {
+    text-decoration: none;
+  }
+
+  .links a:hover {
+    color: var(--blanco);
+    text-decoration: underline;
   }
 
   @media (max-width: 767.98px) {
-    .footer {
-      padding: 28px var(--gutter);
+    .escribime {
+      flex-wrap: wrap;
+      max-width: 100%;
+      font-size: clamp(28px, 8.6vw, 44px);
     }
 
-    .datos {
-      align-items: flex-start;
-      gap: 0;
-      font-size: 12px;
+    .abajo {
+      flex-direction: column;
     }
 
-    .datos a,
     .links a {
       display: inline-flex;
       align-items: center;
       min-height: 44px;
-    }
-
-    .footer-corto {
-      font-size: 12px;
     }
   }
 </style>

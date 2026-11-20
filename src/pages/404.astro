@@ -1,43 +1,47 @@
 ---
-// Página 404 con el estilo del sitio.
+// Página 404: el número tachado con lápiz rojo.
 import Base from '../layouts/Base.astro'
-import Overprint from '../components/Overprint.astro'
 import Button from '../components/Button.astro'
+import Marca from '../components/Marca.astro'
 ---
 
-<Base titulo="Página no encontrada" marquesina={['Página no encontrada', '404', 'Volvé a las obras']} noindex>
-  <section class="nf">
-    <Overprint as="h1" text="404" size="clamp(210px, 26vw, 380px)" height="clamp(210px, 25.5vw, 370px)" mobileSize="150px" mobileHeight="150px" />
-    <div class="cuerpo">
-      <p class="texto">Esta página no existe o cambió de lugar.</p>
-      <div class="botones">
-        <Button variante="primario" href="/">Ver las obras →</Button>
-        <Button variante="secundario" href="/contacto">Contacto</Button>
-      </div>
+<Base titulo="Página no encontrada" noindex>
+  <section class="nf contenedor">
+    <p class="etiqueta punto">Error</p>
+    <h1 class="titulo-pagina">
+      <span class="con-marca numero">404<Marca tipo="cruz" /></span>
+      <span class="sr-only">Página no encontrada</span>
+    </h1>
+    <p class="parrafo texto">Esta página no existe o la obra cambió de lugar.</p>
+    <div class="botones">
+      <Button href="/">Ver las obras →</Button>
+      <Button variante="secundario" href="/contacto">Contacto</Button>
     </div>
   </section>
 </Base>
 
 <style>
   .nf {
-    padding: 24px var(--gutter) 40px;
+    padding-top: clamp(40px, 8vw, 120px);
   }
 
-  .cuerpo {
-    padding-top: 20px;
-    border-top: 2px solid var(--text);
+  .titulo-pagina {
+    margin-top: 18px;
+    font-size: clamp(96px, 22vw, 360px);
+  }
+
+  .numero {
+    display: inline-block;
   }
 
   .texto {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--text-body);
+    margin-top: 32px;
   }
 
   .botones {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 24px;
+    gap: 12px;
+    margin-top: 36px;
   }
 </style>

@@ -7,7 +7,11 @@ import {sanityClient} from 'sanity:client'
 export interface SanityAsset {
   _id: string
   url: string
-  metadata?: {dimensions?: {width: number; height: number}}
+  metadata?: {
+    dimensions?: {width: number; height: number}
+    lqip?: string | null
+    palette?: {dominant?: {background?: string} | null} | null
+  }
 }
 
 export interface SanityImagen {
@@ -74,7 +78,7 @@ export interface SanityContenido {
 
 // ── Consulta ─────────────────────────────────────────────────────────────
 
-const asset = `asset->{_id, url, metadata{dimensions{width, height}}}`
+const asset = `asset->{_id, url, metadata{dimensions{width, height}, lqip, palette{dominant{background}}}}`
 const publicado = `!(_id in path("drafts.**"))`
 
 export const contenidoQuery = /* groq */ `{

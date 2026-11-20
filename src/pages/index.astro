@@ -1,72 +1,115 @@
 ---
-// Home: hero con el nombre, filtro por colección (en el cliente, sin recargar) y grilla de todas las obras.
+// Home: borde de película con los datos, el nombre enorme y una obra "seleccionada" (la primera
+// del orden) recuadrada con lápiz rojo junto a su ficha. Abajo, todas las obras como una hoja de
+// contacto, con filtro por colección (en el cliente, sin recargar).
 import Base from '../layouts/Base.astro'
-import Overprint from '../components/Overprint.astro'
 import FilterChips from '../components/FilterChips.astro'
 import ObraGrid from '../components/ObraGrid.astro'
 import ObraCard from '../components/ObraCard.astro'
+import ObraImagen from '../components/ObraImagen.astro'
+import Marca from '../components/Marca.astro'
 import {getSitio} from '../lib/contenido'
-import {partirEnDos} from '../lib/texto'
+import {conteo, hrefObra, medidasTexto} from '../lib/derivados'
+import {dosCifras} from '../lib/texto'
 
 const {contenido, d} = await getSitio()
 const {obras, config} = contenido
+
+const destacada = obras[0]
+const datosDestacada = destacada ? [destacada.anio || undefined, destacada.tecnica, medidasTexto(destacada)].filter(Boolean) : []
 
 const filtros = [
   {valor: 'todas', label: 'Todas', conteo: obras.length},
   ...d.coleccionesConObras.map((c) => ({valor: c.slug, label: c.nombre, conteo: d.obrasDe(c.slug).length})),
 ]
-const lugar = ['Artista visual', config.ciudad].filter(Boolean).join(' · ')
+const borde = [
+  'Artista visual',
+  config.ciudad,
+  config.disciplinas,
+  d.periodoGeneral && `Obra ${d.periodoGeneral}`,
+  obras.length > 0 && conteo(obras.length, 'obra', 'obras'),
+].filter((t): t is string => Boolean(t))
 ---
 
-<Base seccion="obras" marquesina={d.marquesina.home} descripcion={config.seoDescripcion}>
-  <section class="hero">
-    <Overprint
-      as="h1"
-      text={config.nombre}
-      mobileText={partirEnDos(config.nombre)}
-      size="clamp(210px, 28vw, 410px)"
-      height="clamp(210px, 27.5vw, 400px)"
-      mobileSize="120px"
-      mobileHeight="248px"
-    />
-    <div class="linea">
-      <span>{lugar}</span>
+<Base seccion="obras" descripcion={config.seoDescripcion}>
+  <section class="hero contenedor">
+    <p class="borde">
       {
-        d.periodoGeneral && (
-          <span class="acid">
-            <span class="solo-desktop">Obra </span>
-            {d.periodoGeneral}
-          </span>
-        )
+        borde.map((t, i) => (
+          <>
+            {i > 0 && (
+              <span class="sep" aria-hidden="true">
+                ▸
+              </span>
+            )}
+            <span>{t}</span>
+          </>
+        ))
       }
-      {config.disciplinas && <span class="solo-desktop">{config.disciplinas}</span>}
-    </div>
+    </p>
+
+    <h1 class="nombre grotesca">{config.nombre}</h1>
+
+    {
+      destacada && (
+        <div class="seleccion">
+          <div class="sel-ficha">
+            <p class="etiqueta punto">Selección</p>
+            <p class="sel-num num">
+              {d.numero(destacada)} / {dosCifras(d.total)}
+            </p>
+            <h2 class="sel-titulo grotesca">{destacada.titulo}</h2>
+            {datosDestacada.length > 0 && <p class="sel-datos">{datosDestacada.join(' — ')}</p>}
+            <a class="sel-link con-marca" href={hrefObra(destacada.slug)}>
+              Ver la obra <Marca tipo="flecha" />
+              <Marca tipo="subrayado" modo="hover" />
+            </a>
+          </div>
+
+          <figure class="sel-figura">
+            <a class="sel-img corte con-marca" href={hrefObra(destacada.slug)} tabindex="-1" aria-hidden="true">
+              <ObraImagen imagen={destacada.imagen} sizes="(max-width: 767.98px) 90vw, 55vw" eager class="sel-foto" decorativa />
+              <Marca tipo="recuadro" />
+            </a>
+            <figcaption class="vertical" aria-hidden="true">
+              ▸ {d.numero(destacada)}A &nbsp; {config.nombre} &nbsp; {destacada.anio || ''}
+            </figcaption>
+          </figure>
+        </div>
+      )
+    }
   </section>
 
-  {
-    d.coleccionesConObras.length > 1 && (
-      <div class="filtros">
-        <FilterChips id="filtro-obras" etiqueta="Filtrar por colección" etiquetaVisible="Filtrar" opciones={filtros} />
-        <a class="ver-colecciones" href="/colecciones">Ver colecciones →</a>
-      </div>
-    )
-  }
+  <section class="obras contenedor" aria-labelledby="obras-titulo">
+    <div class="obras-head">
+      <h2 id="obras-titulo" class="titulo-seccion">
+        Obras <sup class="cantidad num">{obras.length}</sup>
+      </h2>
+      {
+        d.coleccionesConObras.length > 1 && (
+          <FilterChips id="filtro-obras" etiqueta="Filtrar por colección" etiquetaVisible="Ver:" opciones={filtros} class="filtros" />
+        )
+      }
+    </div>
 
-  {
-    obras.length > 0 ? (
-      <ObraGrid id="obras">
-        {obras.map((o, i) => <ObraCard obra={d.resumen(o)} eager={i === 0} />)}
-      </ObraGrid>
-    ) : (
-      <p class="vacio">Todavía no hay obras publicadas.</p>
-    )
-  }
+    {
+      obras.length > 0 ? (
+        <ObraGrid id="obras">
+          {obras.map((o) => (
+            <ObraCard obra={d.resumen(o)} />
+          ))}
+        </ObraGrid>
+      ) : (
+        <p class="vacio">Todavía no hay obras publicadas.</p>
+      )
+    }
+  </section>
 </Base>
 
 <script>
-  // Filtro por colección: oculta las tarjetas de otras colecciones y guarda la elección en la URL (?coleccion=…).
+  // Filtro por colección: oculta las obras de otras colecciones y guarda la elección en la URL (?coleccion=…).
   const chips = document.getElementById('filtro-obras')
-  const tarjetas = document.querySelectorAll<HTMLElement>('#obras [data-coleccion]')
+  const tarjetas = document.querySelectorAll<HTMLElement>('#obras > a[href]')
 
   function filtrar(valor: string) {
     tarjetas.forEach((t) => (t.hidden = valor !== 'todas' && t.dataset.coleccion !== valor))
@@ -86,70 +129,199 @@ const lugar = ['Artista visual', config.ciudad].filter(Boolean).join(' · ')
 
 <style>
   .hero {
-    padding: 20px var(--gutter) 0;
+    padding-top: 8px;
   }
 
-  .linea {
+  /* Borde de película: datos a máquina separados por ▸ */
+  .borde {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 8px 24px;
-    padding: 16px 0;
-    border-top: 2px solid var(--text);
-    font-size: 14px;
-    font-weight: 700;
+    gap: 6px 14px;
+    padding: 12px 0;
+    border-top: 1px solid var(--linea);
+    border-bottom: 1px solid var(--linea);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
+    color: var(--gris);
   }
 
-  .acid {
-    color: var(--acid);
+  .sep {
+    color: var(--rojo);
   }
 
-  .filtros {
+  .nombre {
+    margin-top: clamp(28px, 4vw, 56px);
+    font-size: clamp(52px, 10.4vw, 184px);
+    line-height: 0.86;
+    letter-spacing: -0.035em;
+    overflow-wrap: break-word;
+  }
+
+  /* Obra seleccionada */
+  .seleccion {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    align-items: end;
+    gap: 48px clamp(32px, 5vw, 96px);
+    margin-top: clamp(48px, 6vw, 96px);
+  }
+
+  .sel-ficha {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    padding: 20px var(--gutter);
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding-bottom: 6px;
   }
 
-  .vacio {
-    padding: 48px var(--gutter);
-    border-top: 1px solid var(--line);
-    font-size: 15px;
-    color: var(--muted);
+  .sel-num {
+    margin-top: 18px;
+    font-size: 12px;
+    color: var(--tenue);
   }
 
-  .ver-colecciones {
-    margin-left: auto;
+  .sel-titulo {
+    font-size: clamp(26px, 2.6vw, 44px);
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+  }
+
+  .sel-datos {
+    max-width: 42ch;
     font-size: 13px;
-    font-weight: 700;
-    color: var(--acid);
+    color: var(--gris);
+  }
+
+  .sel-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    margin-top: 14px;
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
     text-decoration: none;
     text-transform: uppercase;
   }
 
+  .sel-figura {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 22px;
+  }
+
+  .sel-img {
+    display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .sel-img :global(.sel-foto) {
+    max-height: min(68vh, 680px);
+  }
+
+  .sel-img :global(.marca--recuadro) {
+    stroke-width: 2.6px;
+  }
+
+  /* Texto de borde de película, vertical, al costado de la obra */
+  .vertical {
+    flex: none;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--tenue);
+    white-space: nowrap;
+  }
+
+  /* Obras */
+  .obras {
+    padding-top: clamp(96px, 11vw, 168px);
+  }
+
+  .obras-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 8px 40px;
+    margin-bottom: 56px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--linea);
+  }
+
+  .cantidad {
+    margin-left: 4px;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+    vertical-align: super;
+    color: var(--rojo);
+  }
+
+  .vacio {
+    padding: 24px 0;
+    color: var(--tenue);
+  }
+
+  @media (max-width: 1023.98px) {
+    .seleccion {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sel-ficha {
+      order: 2;
+    }
+
+    .sel-figura {
+      justify-content: flex-start;
+    }
+
+    .sel-img :global(.sel-foto) {
+      max-height: 62vh;
+    }
+  }
+
   @media (max-width: 767.98px) {
-    .hero {
-      padding: 14px var(--gutter) 0;
+    .borde {
+      font-size: 10.5px;
+      gap: 4px 10px;
     }
 
-    .linea {
-      flex-wrap: nowrap;
-      padding: 10px 0;
-      font-size: 11px;
+    .nombre {
+      font-size: clamp(40px, 13.5vw, 72px);
+      line-height: 0.88;
     }
 
-    .solo-desktop,
-    .ver-colecciones {
-      display: none;
+    .seleccion {
+      gap: 28px;
+      margin-top: 40px;
     }
 
-    .filtros {
+    .sel-figura {
+      gap: 14px;
+    }
+
+    .vertical {
+      font-size: 10px;
+    }
+
+    .obras-head {
       display: block;
-      padding: 12px 0 12px var(--gutter);
+      margin-bottom: 40px;
+      padding-bottom: 4px;
+    }
+
+    .obras-head :global(.filtros) {
+      margin-top: 8px;
+      margin-inline: calc(var(--gutter) * -1);
+      padding-inline: calc(var(--gutter) + 10px);
     }
   }
 </style>

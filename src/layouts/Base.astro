@@ -1,10 +1,11 @@
 ---
-import '@fontsource/six-caps'
-import '@fontsource/jetbrains-mono/400.css'
-import '@fontsource/jetbrains-mono/700.css'
+import '@fontsource-variable/archivo/wdth.css'
+import '@fontsource/ibm-plex-mono/400.css'
+import '@fontsource/ibm-plex-mono/500.css'
+import '@fontsource/ibm-plex-mono/400-italic.css'
 import '../styles/global.css'
 
-import Marquee from '../components/Marquee.astro'
+import Aviso from '../components/Aviso.astro'
 import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
 import {type Seccion} from '../lib/sitio'
@@ -22,12 +23,10 @@ interface Props {
   noindex?: boolean
   /** Sección activa en la navegación. */
   seccion?: Seccion
-  /** Frases de la marquesina de esta página. */
-  marquesina: string[]
   footer?: 'completo' | 'corto'
 }
 
-const {titulo, descripcion, imagen, noindex = false, seccion, marquesina, footer = 'completo'} = Astro.props
+const {titulo, descripcion, imagen, noindex = false, seccion, footer = 'completo'} = Astro.props
 const {contenido} = await getSitio()
 const {config, obras} = contenido
 const tituloCompleto = titulo ? `${titulo} — ${config.nombre}` : config.nombre
@@ -52,7 +51,7 @@ const imagenOg = imagenRelativa ? new URL(imagenRelativa, sitio).href : undefine
     <meta name="description" content={descripcionFinal} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
-    <meta name="theme-color" content="#0A0A0A" />
+    <meta name="theme-color" content="#0B0B0A" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -68,10 +67,10 @@ const imagenOg = imagenRelativa ? new URL(imagenRelativa, sitio).href : undefine
     {imagenOg && <meta property="og:image" content={imagenOg} />}
     <meta name="twitter:card" content={imagenOg ? 'summary_large_image' : 'summary'} />
   </head>
-  <body class="grain">
+  <body>
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
     <div class="pagina">
-      <Marquee items={marquesina} />
+      {config.marquesina.length > 0 && <Aviso items={config.marquesina} />}
       <Header actual={seccion} />
       <main id="contenido" tabindex="-1">
         <slot />

@@ -1,19 +1,18 @@
 // Valores que se calculan en el build a partir del contenido: numeración, anterior/siguiente,
-// obras por colección, período, conteos y textos de la marquesina.
+// obras por colección, período y conteos.
 import type {Coleccion, Contenido, Obra, ObraResumen} from './tipos'
 import {dosCifras} from './texto'
 
 export const hrefObra = (slug: string) => `/obras/${slug}`
 export const hrefColeccion = (slug: string) => `/colecciones/${slug}`
 
-/** "2020—2023", o "2021" si todas son del mismo año. */
+/** "2020–2023", o "2021" si todas son del mismo año. */
 export function periodo(obras: Obra[]): string {
-  if (obras.length === 0) return ''
   const anios = obras.map((o) => o.anio).filter((a) => a > 0)
   if (anios.length === 0) return ''
   const min = Math.min(...anios)
   const max = Math.max(...anios)
-  return min === max ? String(min) : `${min}—${max}`
+  return min === max ? String(min) : `${min}–${max}`
 }
 
 /** "160 × 120 cm" (+ profundidad si la hay). */
@@ -23,8 +22,11 @@ export function medidasTexto(obra: Obra): string | undefined {
   return partes.length ? `${partes.join(' × ')} cm` : undefined
 }
 
+/** "1 obra", "4 obras". */
+export const conteo = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`
+
 export function crearDerivados(c: Contenido) {
-  const {obras, colecciones, config} = c
+  const {obras, colecciones} = c
   const total = obras.length
   const coleccionPorSlug = new Map(colecciones.map((col) => [col.slug, col]))
   const indicePorSlug = new Map(obras.map((o, i) => [o.slug, i]))
@@ -45,7 +47,7 @@ export function crearDerivados(c: Contenido) {
       anio: obra.anio,
       numero: numero(obra),
       tecnica: obra.tecnica,
-      medidas: medidasTexto(obra)?.replace(/ × /g, '×').replace(/ cm$/, ''),
+      medidas: medidasTexto(obra),
       coleccion: col ? {nombre: col.nombre, slug: col.slug} : undefined,
       imagen: obra.imagen,
     }
@@ -60,28 +62,6 @@ export function crearDerivados(c: Contenido) {
     }
   }
 
-  const periodoGeneral = periodo(obras)
-  const conteo = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`
-  const obrasTxt = conteo(total, 'obra', 'obras')
-  const coleccionesTxt = conteo(coleccionesConObras.length, 'colección', 'colecciones')
-
-  const marquesina = {
-    home: config.marquesina.length
-      ? config.marquesina
-      : [config.nombre, periodoGeneral && `Obra ${periodoGeneral}`, `${obrasTxt} · ${coleccionesTxt}`].filter(Boolean),
-    colecciones: [coleccionesTxt, obrasTxt, periodoGeneral].filter(Boolean),
-    coleccion: (col: Coleccion) => {
-      const lista = obrasDe(col.slug)
-      return [`Colección ${numeroColeccion(col)}`, col.nombre, conteo(lista.length, 'obra', 'obras'), periodo(lista)].filter(Boolean)
-    },
-    obra: (obra: Obra) =>
-      [`Obra ${numero(obra)} / ${dosCifras(total)}`, obra.titulo, obra.anio ? String(obra.anio) : '', obra.tecnica, medidasTexto(obra)].filter(
-        (t): t is string => Boolean(t),
-      ),
-    acerca: [config.nombre, 'Artista visual', config.ciudad].filter((t): t is string => Boolean(t)),
-    contacto: ['Escribime', 'Consultas por obra', 'Exposiciones', 'Prensa'],
-  }
-
   return {
     total,
     numero,
@@ -91,8 +71,7 @@ export function crearDerivados(c: Contenido) {
     numeroColeccion,
     resumen,
     vecinas,
-    periodoGeneral,
-    marquesina,
+    periodoGeneral: periodo(obras),
   }
 }
 

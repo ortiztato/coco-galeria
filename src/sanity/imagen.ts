@@ -39,6 +39,8 @@ export function imagenSanity(img: SanityImagen | null | undefined, opciones: Opc
     height,
     alt: img.alt?.trim() || opciones.alt || '',
     miniatura: base().width(160).height(160).fit('crop').url(),
+    lqip: asset.metadata?.lqip ?? undefined,
+    color: asset.metadata?.palette?.dominant?.background ?? undefined,
   }
 }
 

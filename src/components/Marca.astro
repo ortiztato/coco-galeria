@@ -1,0 +1,39 @@
+---
+// Trazo de lápiz graso rojo, hecho a mano, para marcar lo elegido (como un fotógrafo sobre una
+// hoja de contacto). Es decorativo (aria-hidden). Se posiciona sobre su elemento padre, que tiene
+// que llevar la clase global "con-marca" (position: relative).
+//   circulo   → encierra un texto (sección activa, filtro elegido)
+//   subrayado → debajo de un texto
+//   recuadro  → alrededor de una obra
+//   cruz      → tacha (404)
+//   flecha    → en línea con el texto
+// Modo:
+//   fija    → siempre visible, se dibuja al cargar
+//   hover   → aparece al pasar el mouse o con el foco sobre el padre
+interface Props {
+  tipo: 'circulo' | 'subrayado' | 'recuadro' | 'cruz' | 'flecha'
+  modo?: 'fija' | 'hover'
+  class?: string
+}
+
+const {tipo, modo = 'fija', class: className} = Astro.props
+
+const formas = {
+  circulo: {viewBox: '0 0 100 40', d: 'M10 25C6 13 29 4.5 52 4.5C76 4.5 96 11 95 21.5C94 32 71 37 48 36C25 35 5 31 6 20C7 13 18 8 32 6'},
+  subrayado: {viewBox: '0 0 100 8', d: 'M1 5.5C18 2.5 34 7 52 4.5S84 3 99 5'},
+  recuadro: {viewBox: '0 0 100 100', d: 'M3 3.5C30 1.5 70 3 97.5 2C98.5 30 97 70 98 97.5C70 98.5 30 97 2.5 98C1.5 70 3 30 1.5 1.5L13 3'},
+  cruz: {viewBox: '0 0 100 100', d: 'M7 9C30 36 62 66 93 91M91 7C64 37 38 63 8 93'},
+  flecha: {viewBox: '0 0 100 40', d: 'M4 23C28 20 58 24 91 19M77 8.5L92 19L79 31'},
+}
+const {viewBox, d} = formas[tipo]
+---
+
+<svg
+  class:list={['marca', `marca--${tipo}`, `marca--${modo}`, className]}
+  viewBox={viewBox}
+  preserveAspectRatio="none"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path d={d} vector-effect="non-scaling-stroke"></path>
+</svg>
